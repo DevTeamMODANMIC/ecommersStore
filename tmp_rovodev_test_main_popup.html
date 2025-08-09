@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Main Page Popup</title>
+</head>
+<body>
+    <h1>Test Main Page Admin Popup</h1>
+    <p>Press Ctrl+Shift+S to test popup</p>
+    <div id="log"></div>
+    
+    <!-- Admin Access Popup -->
+    <div id="adminPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-width: 400px; width: 90%;">
+            <h3 style="margin: 0 0 1rem 0; color: #1f2937; text-align: center;">🔒 Admin Access</h3>
+            <p style="margin: 0 0 1.5rem 0; color: #6b7280; text-align: center;">Enter admin password to continue</p>
+            <input type="password" id="adminPasswordInput" placeholder="Enter password..." style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem; margin-bottom: 1rem; outline: none;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button onclick="submitAdminPassword()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Access Admin</button>
+                <button onclick="closeAdminPopup()" style="flex: 1; background: #6b7280; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message) {
+            document.getElementById('log').innerHTML += '<div>' + message + '</div>';
+            console.log(message);
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            log(`Key: ${event.key}, Ctrl: ${event.ctrlKey}, Shift: ${event.shiftKey}`);
+            
+            if (event.ctrlKey && event.shiftKey && (event.key === 'S' || event.key === 's')) {
+                event.preventDefault();
+                log('Secret key detected! Showing popup...');
+                showAdminPopup();
+            }
+        });
+
+        function showAdminPopup() {
+            log('showAdminPopup called');
+            const popup = document.getElementById('adminPopup');
+            const input = document.getElementById('adminPasswordInput');
+            
+            popup.style.display = 'flex';
+            input.value = '';
+            input.focus();
+            log('Popup should be visible now');
+        }
+
+        function closeAdminPopup() {
+            document.getElementById('adminPopup').style.display = 'none';
+            log('Popup closed');
+        }
+
+        function submitAdminPassword() {
+            const input = document.getElementById('adminPasswordInput');
+            const password = input.value.toLowerCase();
+            log('Password submitted: ' + password);
+            
+            if (password === 'admin123') {
+                log('Correct password! Would redirect to admin...');
+                closeAdminPopup();
+            } else {
+                log('Incorrect password');
+                input.style.borderColor = '#ef4444';
+                input.value = '';
+                input.placeholder = 'Incorrect password. Try again...';
+            }
+        }
+    </script>
+</body>
+</html>

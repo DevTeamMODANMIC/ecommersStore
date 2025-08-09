@@ -3,136 +3,745 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModernStore - Checkout</title>
-    <meta name="description" content="Complete your purchase securely">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="multipage-enhancements.css">
+    <title>Checkout - ModernStore</title>
+    
+    <!-- Unified CSS - Matching main page -->
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-50);
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        
+        /* Header - Same as main page */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            gap: 2rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover { color: var(--primary); }
+        
+        /* Page Header */
+        .page-header {
+            padding: 2rem 0;
+            background: var(--white);
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            font-size: 1rem;
+            color: var(--gray-600);
+        }
+        
+        /* Checkout Steps */
+        .checkout-steps {
+            padding: 2rem 0;
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-400);
+        }
+        
+        .step.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .step.completed {
+            color: var(--success);
+        }
+        
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .step.active .step-number {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .step.completed .step-number {
+            background: var(--success);
+            color: var(--white);
+        }
+        
+        /* Checkout Content */
+        .checkout-section {
+            padding: 3rem 0;
+        }
+        
+        .checkout-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+        
+        .checkout-form {
+            background: var(--white);
+            border-radius: 1rem;
+            border: 1px solid var(--gray-200);
+            padding: 2rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .payment-method {
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .payment-method:hover,
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .payment-method svg {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Order Summary */
+        .order-summary {
+            background: var(--white);
+            border-radius: 1rem;
+            border: 1px solid var(--gray-200);
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 6rem;
+        }
+        
+        .order-summary h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+        }
+        
+        .order-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .order-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+        
+        .order-item-details h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .order-item-details p {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+        
+        .order-item-price {
+            margin-left: auto;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .summary-row:not(:last-child) {
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .summary-row.total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            border-top: 2px solid var(--gray-200);
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-50);
+        }
+        
+        /* Footer - Same as main page */
+        .footer {
+            background: var(--gray-900);
+            color: var(--gray-600);
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer h3, .footer h4 {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+        
+        .footer ul {
+            list-style: none;
+        }
+        
+        .footer ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer a {
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer a:hover {
+            color: var(--white);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid var(--gray-800);
+            padding-top: 1rem;
+            text-align: center;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .page-header h1 { font-size: 2rem; }
+            .checkout-content { grid-template-columns: 1fr; gap: 2rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .steps { flex-direction: column; gap: 1rem; }
+            .payment-methods { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 480px) {
+            .page-header { padding: 1.5rem 0; }
+            .checkout-section { padding: 2rem 0; }
+            .checkout-form, .order-summary { padding: 1.5rem; }
+        }
+    </style>
 </head>
+
 <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <!-- Navigation Header -->
-    <header class="header" role="banner">
-        <nav class="navbar" role="navigation" aria-label="Main navigation">
-            <div class="nav-container">
-                <div class="nav-brand">
-                    <a href="../index.html" class="brand-link" aria-label="Go to homepage">
-                        <h1 class="brand-title">ModernStore</h1>
-                    </a>
-                </div>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../../index.html" class="logo">ModernStore</a>
                 
-                <!-- Desktop Navigation -->
-                <ul id="nav-menu" class="nav-menu">
-                    <li>
-                        <a href="../index.html" class="nav-link" aria-label="Home page">Home</a>
-                    </li>
-                    <li>
-                        <a href="products.html" class="nav-link" aria-label="Products page">Products</a>
-                    </li>
-                    <li>
-                        <a href="cart.html" class="nav-link cart-link" aria-label="Shopping cart">
-                            Cart <span class="cart-count" aria-label="Items in cart" aria-live="polite">0</span>
-                        </a>
-                    </li>
+                <ul class="nav-links">
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                 </ul>
                 
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" type="button" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="nav-menu">
-                    <span class="hamburger-line" aria-hidden="true"></span>
-                    <span class="hamburger-line" aria-hidden="true"></span>
-                    <span class="hamburger-line" aria-hidden="true"></span>
+                <button class="cart-btn" onclick="toggleCart()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span class="cart-count" id="cartCount">0</span>
                 </button>
-            </div>
-        </nav>
+            </nav>
+        </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main id="main-content" class="main-content" role="main">
-        
-        <!-- Checkout Page Section -->
-        <section id="checkout" class="page-section active" aria-labelledby="checkout-title">
-            <div class="container">
-                <header class="page-header">
-                    <h2 id="checkout-title">Checkout</h2>
-                </header>
-                
-                <div class="checkout-content">
-                    <div class="checkout-form-container">
-                        <form id="checkout-form" class="checkout-form" novalidate aria-label="Checkout form">
-                            <fieldset class="form-section">
-                                <legend>Shipping Information</legend>
-                                
-                                <div class="form-group">
-                                    <label for="shipping-name">Full Name *</label>
-                                    <input type="text" id="shipping-name" name="shippingName" required aria-describedby="shipping-name-error">
-                                    <div id="shipping-name-error" class="error-message" role="alert"></div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="shipping-email">Email Address *</label>
-                                    <input type="email" id="shipping-email" name="shippingEmail" required aria-describedby="shipping-email-error">
-                                    <div id="shipping-email-error" class="error-message" role="alert"></div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="shipping-address">Street Address *</label>
-                                    <input type="text" id="shipping-address" name="shippingAddress" required aria-describedby="shipping-address-error">
-                                    <div id="shipping-address-error" class="error-message" role="alert"></div>
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="shipping-city">City *</label>
-                                        <input type="text" id="shipping-city" name="shippingCity" required aria-describedby="shipping-city-error">
-                                        <div id="shipping-city-error" class="error-message" role="alert"></div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="shipping-zip">ZIP Code *</label>
-                                        <input type="text" id="shipping-zip" name="shippingZip" required aria-describedby="shipping-zip-error">
-                                        <div id="shipping-zip-error" class="error-message" role="alert"></div>
-                                    </div>
-                                </div>
-                            </fieldset>
-                            
-                            <button type="submit" class="submit-button" aria-describedby="order-total">Complete Order</button>
-                        </form>
-                    </div>
-                    
-                    <div class="order-summary" role="region" aria-labelledby="order-summary-title">
-                        <h3 id="order-summary-title">Order Summary</h3>
-                        <div id="checkout-items" aria-live="polite">
-                            <!-- Order items will be dynamically inserted here -->
-                            <p>No items in cart</p>
-                        </div>
-                        <div class="order-totals" id="order-totals">
-                            <div class="summary-row">
-                                <span>Subtotal:</span>
-                                <span id="order-subtotal">$0.00</span>
-                            </div>
-                            <div class="summary-row">
-                                <span>Tax:</span>
-                                <span id="order-tax">$0.00</span>
-                            </div>
-                            <div class="summary-row total">
-                                <span>Total:</span>
-                                <span id="order-total">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Checkout</h1>
+            <p>Complete your purchase securely</p>
+        </div>
+    </section>
+
+    <!-- Checkout Steps -->
+    <section class="checkout-steps">
+        <div class="container">
+            <div class="steps">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <span>Cart</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <span>Checkout</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <span>Payment</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <span>Complete</span>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-    </main>
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <div class="checkout-content">
+                <div class="checkout-form">
+                    <form id="checkoutForm">
+                        <!-- Shipping Information -->
+                        <div class="form-section">
+                            <h2>Shipping Information</h2>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="address">Street Address</label>
+                                    <input type="text" id="address" name="address" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" id="city" name="city" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="state">State</label>
+                                    <select id="state" name="state" required>
+                                        <option value="">Select State</option>
+                                        <option value="CA">California</option>
+                                        <option value="NY">New York</option>
+                                        <option value="TX">Texas</option>
+                                        <option value="FL">Florida</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="zipCode">ZIP Code</label>
+                                    <input type="text" id="zipCode" name="zipCode" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Information -->
+                        <div class="form-section">
+                            <h2>Payment Method</h2>
+                            <div class="payment-methods">
+                                <div class="payment-method selected" onclick="selectPayment('card')">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                                    </svg>
+                                    <div>Credit Card</div>
+                                </div>
+                                <div class="payment-method" onclick="selectPayment('paypal')">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"></path>
+                                        <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+                                    </svg>
+                                    <div>PayPal</div>
+                                </div>
+                                <div class="payment-method" onclick="selectPayment('apple')">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                    </svg>
+                                    <div>Apple Pay</div>
+                                </div>
+                            </div>
+                            
+                            <div id="cardDetails">
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label for="cardNumber">Card Number</label>
+                                        <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="expiryDate">Expiry Date</label>
+                                        <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cvv">CVV</label>
+                                        <input type="text" id="cvv" name="cvv" placeholder="123">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label for="cardName">Name on Card</label>
+                                        <input type="text" id="cardName" name="cardName">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+                    <div id="orderItems">
+                        <!-- Order items will be loaded here -->
+                    </div>
+                    <div id="orderTotals">
+                        <!-- Order totals will be loaded here -->
+                    </div>
+                    <button class="btn btn-primary" onclick="processOrder()">
+                        Complete Order
+                    </button>
+                    <a href="cart.html" class="btn btn-secondary">Back to Cart</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="footer" role="contentinfo">
+    <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 ModernStore. All rights reserved.</p>
+            <div class="footer-content">
+                <div>
+                    <h3>ModernStore</h3>
+                    <p>Your trusted partner for premium products and exceptional shopping experience.</p>
+                </div>
+                
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Shipping</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>support@modernstore.com</li>
+                        <li>(555) 123-4567</li>
+                        <li>123 Store St, City 12345</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 ModernStore. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
     <!-- JavaScript -->
-    <script defer src="script-multipage.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let selectedPayment = 'card';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (cart.length === 0) {
+                window.location.href = 'cart.html';
+                return;
+            }
+            renderOrderSummary();
+        });
+
+        function renderOrderSummary() {
+            const orderItems = document.getElementById('orderItems');
+            const orderTotals = document.getElementById('orderTotals');
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal > 100 ? 0 : 9.99;
+            const tax = subtotal * 0.08;
+            const total = subtotal + shipping + tax;
+
+            orderItems.innerHTML = cart.map(item => `
+                <div class="order-item">
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="order-item-details">
+                        <h4>${item.name}</h4>
+                        <p>Qty: ${item.quantity}</p>
+                    </div>
+                    <div class="order-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+                </div>
+            `).join('');
+
+            orderTotals.innerHTML = `
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span>$${subtotal.toFixed(2)}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span>${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tax:</span>
+                    <span>$${tax.toFixed(2)}</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span>$${total.toFixed(2)}</span>
+                </div>
+            `;
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.payment-method').classList.add('selected');
+            
+            const cardDetails = document.getElementById('cardDetails');
+            cardDetails.style.display = method === 'card' ? 'block' : 'none';
+        }
+
+        function processOrder() {
+            const form = document.getElementById('checkoutForm');
+            const formData = new FormData(form);
+            
+            // Basic validation
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Simulate order processing
+            showNotification('Processing your order...', 'info');
+            
+            setTimeout(() => {
+                // Clear cart
+                localStorage.removeItem('cart');
+                
+                // Show success and redirect
+                showNotification('Order placed successfully!', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 2000);
+            }, 2000);
+        }
+
+        function showNotification(message, type = 'success') {
+            const colors = {
+                success: 'var(--success)',
+                error: 'var(--error)',
+                info: 'var(--primary)'
+            };
+
+            const div = document.createElement('div');
+            div.style.cssText = `position:fixed;top:20px;right:20px;background:${colors[type]};color:white;padding:1rem 1.5rem;border-radius:0.75rem;z-index:1000;font-weight:500;`;
+            div.textContent = message;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
 </body>
 </html>

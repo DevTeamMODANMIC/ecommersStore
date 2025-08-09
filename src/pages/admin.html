@@ -5,8 +5,287 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ModernStore - Admin Dashboard</title>
     <meta name="description" content="Admin dashboard for product management">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="multipage-enhancements.css">
+    <!-- Unified CSS - Matching main page -->
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-50);
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .brand-link {
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover { color: var(--primary); }
+        .nav-link.active { color: var(--primary); font-weight: 600; }
+        
+        /* Admin Styles */
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .page-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-content {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .admin-button:not(.secondary) {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .admin-button:not(.secondary):hover {
+            background: var(--primary-dark);
+        }
+        
+        .admin-button.secondary {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+        
+        .admin-button.secondary:hover {
+            background: var(--gray-200);
+        }
+        
+        .admin-table-container {
+            overflow-x: auto;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+        }
+        
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .admin-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: var(--gray-600);
+            font-style: italic;
+        }
+        
+        .footer {
+            background: var(--gray-800);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+        }
+        
+        /* Access Denied Styles */
+        .access-denied {
+            display: none;
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .access-denied h1 {
+            font-size: 3rem;
+            color: var(--error);
+            margin-bottom: 1rem;
+        }
+        
+        .access-denied p {
+            font-size: 1.2rem;
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+        
+        .access-hint {
+            background: var(--gray-100);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-style: italic;
+            color: var(--gray-600);
+        }
+    </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -15,7 +294,7 @@
         <nav class="navbar" role="navigation" aria-label="Main navigation">
             <div class="nav-container">
                 <div class="nav-brand">
-                    <a href="../index.html" class="brand-link" aria-label="Go to homepage">
+                    <a href="../../index.html" class="brand-link" aria-label="Go to homepage">
                         <h1 class="brand-title">ModernStore</h1>
                     </a>
                 </div>
@@ -23,20 +302,31 @@
                 <!-- Desktop Navigation -->
                 <ul id="nav-menu" class="nav-menu">
                     <li>
-                        <a href="../index.html" class="nav-link" aria-label="Home page">Home</a>
+                        <a href="../../index.html" class="nav-link" aria-label="Home page">Home</a>
                     </li>
                     <li>
                         <a href="products.html" class="nav-link" aria-label="Products page">Products</a>
                     </li>
                     <li>
-                        <a href="cart.html" class="nav-link cart-link" aria-label="Shopping cart">
-                            Cart <span class="cart-count" aria-label="Items in cart" aria-live="polite">0</span>
-                        </a>
+                        <a href="about.html" class="nav-link" aria-label="About page">About</a>
                     </li>
                     <li>
-                        <a href="admin.html" class="nav-link" aria-label="Admin dashboard">Admin</a>
+                        <a href="contact.html" class="nav-link" aria-label="Contact page">Contact</a>
+                    </li>
+                    <li>
+                        <a href="admin.html" class="nav-link active" aria-label="Admin dashboard">Admin</a>
                     </li>
                 </ul>
+                
+                <!-- Cart Button -->
+                <button class="cart-btn" onclick="toggleCart()" style="position: relative; background: none; border: none; color: var(--gray-600); cursor: pointer; padding: 0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span class="cart-count" id="cartCount" style="position: absolute; top: -5px; right: -5px; background: var(--error); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;">0</span>
+                </button>
                 
                 <!-- Mobile Menu Toggle -->
                 <button class="mobile-menu-toggle" type="button" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="nav-menu">
@@ -141,7 +431,263 @@
         </div>
     </div>
 
+    <!-- Access Denied Section -->
+    <div id="access-denied" class="access-denied">
+        <div class="container">
+            <h1>🔒 Access Denied</h1>
+            <p>This area is restricted to authorized personnel only.</p>
+            <div class="access-hint">
+                Hint: Use the secret key combination to access admin panel...
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Access Popup -->
+    <div id="adminPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-width: 400px; width: 90%;">
+            <h3 style="margin: 0 0 1rem 0; color: #1f2937; text-align: center;">🔒 Admin Access</h3>
+            <p style="margin: 0 0 1.5rem 0; color: #6b7280; text-align: center;">Enter admin password to continue</p>
+            <input type="password" id="adminPasswordInput" placeholder="Enter password..." style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem; margin-bottom: 1rem; outline: none;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button onclick="submitAdminPassword()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Access Admin</button>
+                <button onclick="closeAdminPopup()" style="flex: 1; background: #6b7280; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
-    <script defer src="script-multipage.js"></script>
+    <script>
+        // Secret admin access with Ctrl+Shift+S + password "admin123"
+        let adminAccess = false;
+        let secretKeyActivated = false;
+        let passwordBuffer = '';
+        
+        document.addEventListener('keydown', function(event) {
+            // Check for secret key combination Ctrl+Shift+S
+            if (event.ctrlKey && event.shiftKey && (event.key === 'S' || event.key === 's')) {
+                event.preventDefault();
+                showAdminPopup();
+            }
+        });
+
+        function showAdminPopup() {
+            const popup = document.getElementById('adminPopup');
+            const input = document.getElementById('adminPasswordInput');
+            
+            popup.style.display = 'flex';
+            input.value = '';
+            input.focus();
+            
+            // Handle Enter key in password input
+            input.onkeydown = function(event) {
+                if (event.key === 'Enter') {
+                    submitAdminPassword();
+                } else if (event.key === 'Escape') {
+                    closeAdminPopup();
+                }
+            };
+        }
+
+        function closeAdminPopup() {
+            document.getElementById('adminPopup').style.display = 'none';
+        }
+
+        function submitAdminPassword() {
+            const input = document.getElementById('adminPasswordInput');
+            const password = input.value.toLowerCase();
+            
+            if (password === 'admin123') {
+                closeAdminPopup();
+                adminAccess = true;
+                
+                // Show admin interface
+                document.getElementById('access-denied').style.display = 'none';
+                document.querySelector('.header').style.display = 'block';
+                document.querySelector('.main-content').style.display = 'block';
+                document.querySelector('.footer').style.display = 'block';
+                
+                // Show success notification
+                showNotification('Admin access granted!', 'success');
+            } else {
+                // Show error message
+                input.style.borderColor = '#ef4444';
+                input.value = '';
+                input.placeholder = 'Incorrect password. Try again...';
+                
+                setTimeout(() => {
+                    input.style.borderColor = '#e5e7eb';
+                    input.placeholder = 'Enter password...';
+                }, 2000);
+            }
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('adminPopup').onclick = function(event) {
+            if (event.target === this) {
+                closeAdminPopup();
+            }
+        };
+        
+        // Check access on page load
+        window.addEventListener('load', function() {
+            if (!adminAccess) {
+                document.getElementById('access-denied').style.display = 'block';
+                document.querySelector('.header').style.display = 'none';
+                document.querySelector('.main-content').style.display = 'none';
+                document.querySelector('.footer').style.display = 'none';
+            }
+        });
+        
+        function showNotification(message, type = 'success') {
+            const colors = {
+                success: 'var(--success)',
+                error: 'var(--error)',
+                info: 'var(--primary)'
+            };
+
+            const div = document.createElement('div');
+            div.style.cssText = `position:fixed;top:20px;right:20px;background:${colors[type]};color:white;padding:1rem 1.5rem;border-radius:0.75rem;z-index:1000;font-weight:500;max-width:350px;`;
+            div.textContent = message;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+    <!-- Enhanced Admin Features -->
+    <script>
+        // Admin functionality
+        let products = [
+            {id: 1, name: "Premium Wireless Headphones", price: 299.99, category: "Electronics", featured: true, inStock: true},
+            {id: 2, name: "Smart Fitness Watch", price: 199.99, category: "Electronics", featured: false, inStock: true},
+            {id: 3, name: "Organic Cotton T-Shirt", price: 29.99, category: "Clothing", featured: true, inStock: true},
+            {id: 4, name: "Minimalist Desk Lamp", price: 89.99, category: "Home", featured: false, inStock: true},
+            {id: 5, name: "Bluetooth Speaker", price: 79.99, category: "Electronics", featured: true, inStock: false}
+        ];
+
+        // Load products into admin table
+        function loadAdminProducts() {
+            const tbody = document.getElementById('admin-products-tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>$${product.price}</td>
+                    <td>${product.category}</td>
+                    <td>${product.featured ? 'Yes' : 'No'}</td>
+                    <td>
+                        <button onclick="editProduct(${product.id})" class="admin-button secondary" style="margin-right: 0.5rem; padding: 0.5rem 1rem;">Edit</button>
+                        <button onclick="deleteProduct(${product.id})" class="admin-button" style="background: var(--error); padding: 0.5rem 1rem;">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Add new product
+        function addProduct(productData) {
+            const newId = Math.max(...products.map(p => p.id)) + 1;
+            const newProduct = {
+                id: newId,
+                ...productData,
+                featured: productData.featured || false,
+                inStock: productData.inStock !== false
+            };
+            products.push(newProduct);
+            loadAdminProducts();
+            showNotification('Product added successfully!', 'success');
+        }
+
+        // Edit product
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            
+            const newName = prompt('Product Name:', product.name);
+            if (newName === null) return;
+            
+            const newPrice = prompt('Price:', product.price);
+            if (newPrice === null) return;
+            
+            const newCategory = prompt('Category:', product.category);
+            if (newCategory === null) return;
+            
+            product.name = newName;
+            product.price = parseFloat(newPrice);
+            product.category = newCategory;
+            
+            loadAdminProducts();
+            showNotification('Product updated successfully!', 'success');
+        }
+
+        // Delete product
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                products = products.filter(p => p.id !== id);
+                loadAdminProducts();
+                showNotification('Product deleted successfully!', 'success');
+            }
+        }
+
+        // Handle add product form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load products on page load
+            loadAdminProducts();
+            
+            // Add product button
+            const addBtn = document.getElementById('add-product-btn');
+            if (addBtn) {
+                addBtn.onclick = function() {
+                    document.getElementById('add-product-modal').style.display = 'flex';
+                };
+            }
+            
+            // Close modal button
+            const closeBtn = document.getElementById('close-add-product-modal');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    document.getElementById('add-product-modal').style.display = 'none';
+                };
+            }
+            
+            // Add product form submission
+            const form = document.getElementById('add-product-form');
+            if (form) {
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const productData = {
+                        name: formData.get('name'),
+                        price: parseFloat(formData.get('price')),
+                        category: formData.get('category'),
+                        image: formData.get('image'),
+                        description: formData.get('description'),
+                        featured: formData.get('featured') === 'on',
+                        inStock: formData.get('inStock') === 'on'
+                    };
+                    addProduct(productData);
+                    form.reset();
+                    document.getElementById('add-product-modal').style.display = 'none';
+                };
+            }
+            
+            // Refresh button
+            const refreshBtn = document.getElementById('refresh-products-btn');
+            if (refreshBtn) {
+                refreshBtn.onclick = function() {
+                    loadAdminProducts();
+                    showNotification('Products refreshed!', 'info');
+                };
+            }
+        });
+
+        // Override any problematic redirects
+        function toggleCart() {
+            showNotification('Cart functionality available on main site', 'info');
+        }
+    </script>
 </body>
 </html>
