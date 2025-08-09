@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModernStore - Checkout</title>
+    <meta name="description" content="Complete your purchase securely">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="multipage-enhancements.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <!-- Navigation Header -->
+    <header class="header" role="banner">
+        <nav class="navbar" role="navigation" aria-label="Main navigation">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <a href="../index.html" class="brand-link" aria-label="Go to homepage">
+                        <h1 class="brand-title">ModernStore</h1>
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <ul id="nav-menu" class="nav-menu">
+                    <li>
+                        <a href="../index.html" class="nav-link" aria-label="Home page">Home</a>
+                    </li>
+                    <li>
+                        <a href="products.html" class="nav-link" aria-label="Products page">Products</a>
+                    </li>
+                    <li>
+                        <a href="cart.html" class="nav-link cart-link" aria-label="Shopping cart">
+                            Cart <span class="cart-count" aria-label="Items in cart" aria-live="polite">0</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" type="button" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="nav-menu">
+                    <span class="hamburger-line" aria-hidden="true"></span>
+                    <span class="hamburger-line" aria-hidden="true"></span>
+                    <span class="hamburger-line" aria-hidden="true"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main id="main-content" class="main-content" role="main">
+        
+        <!-- Checkout Page Section -->
+        <section id="checkout" class="page-section active" aria-labelledby="checkout-title">
+            <div class="container">
+                <header class="page-header">
+                    <h2 id="checkout-title">Checkout</h2>
+                </header>
+                
+                <div class="checkout-content">
+                    <div class="checkout-form-container">
+                        <form id="checkout-form" class="checkout-form" novalidate aria-label="Checkout form">
+                            <fieldset class="form-section">
+                                <legend>Shipping Information</legend>
+                                
+                                <div class="form-group">
+                                    <label for="shipping-name">Full Name *</label>
+                                    <input type="text" id="shipping-name" name="shippingName" required aria-describedby="shipping-name-error">
+                                    <div id="shipping-name-error" class="error-message" role="alert"></div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="shipping-email">Email Address *</label>
+                                    <input type="email" id="shipping-email" name="shippingEmail" required aria-describedby="shipping-email-error">
+                                    <div id="shipping-email-error" class="error-message" role="alert"></div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="shipping-address">Street Address *</label>
+                                    <input type="text" id="shipping-address" name="shippingAddress" required aria-describedby="shipping-address-error">
+                                    <div id="shipping-address-error" class="error-message" role="alert"></div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="shipping-city">City *</label>
+                                        <input type="text" id="shipping-city" name="shippingCity" required aria-describedby="shipping-city-error">
+                                        <div id="shipping-city-error" class="error-message" role="alert"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="shipping-zip">ZIP Code *</label>
+                                        <input type="text" id="shipping-zip" name="shippingZip" required aria-describedby="shipping-zip-error">
+                                        <div id="shipping-zip-error" class="error-message" role="alert"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            
+                            <button type="submit" class="submit-button" aria-describedby="order-total">Complete Order</button>
+                        </form>
+                    </div>
+                    
+                    <div class="order-summary" role="region" aria-labelledby="order-summary-title">
+                        <h3 id="order-summary-title">Order Summary</h3>
+                        <div id="checkout-items" aria-live="polite">
+                            <!-- Order items will be dynamically inserted here -->
+                            <p>No items in cart</p>
+                        </div>
+                        <div class="order-totals" id="order-totals">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span id="order-subtotal">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax:</span>
+                                <span id="order-tax">$0.00</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total:</span>
+                                <span id="order-total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <p>&copy; 2024 ModernStore. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script defer src="script-multipage.js"></script>
+</body>
+</html>

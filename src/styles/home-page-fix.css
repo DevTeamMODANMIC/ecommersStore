@@ -1,0 +1,110 @@
+/* Home Page Featured Products Fix */
+
+/* Override products page styles for home page */
+.featured-section .featured-products {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 1.5rem !important;
+    padding: 1.5rem 0 !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+/* Ensure home page cards are properly sized */
+.featured-section .premium-card {
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.featured-section .premium-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Home page specific product image sizing */
+.featured-section .product-image {
+    height: 200px !important;
+}
+
+/* Home page specific product info padding */
+.featured-section .product-info {
+    padding: 18px !important;
+}
+
+/* Ensure proper grid layout on home page */
+.featured-section .featured-products {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+}
+
+/* Mobile responsive for home page */
+@media (max-width: 768px) {
+    .featured-section .featured-products {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+    
+    .featured-section .product-image {
+        height: 180px !important;
+    }
+    
+    .featured-section .product-info {
+        padding: 16px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-section .featured-products {
+        grid-template-columns: 1fr !important;
+        max-width: 350px !important;
+    }
+}
+
+/* Fix for product placeholder */
+.featured-section .product-placeholder {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6b7280;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Ensure featured section has proper spacing */
+.featured-section {
+    padding: 4rem 0;
+    background: linear-gradient(to bottom, #f8fafc, #ffffff);
+}
+
+.featured-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.featured-section .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: #2d3748;
+    position: relative;
+}
+
+.featured-section .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+}

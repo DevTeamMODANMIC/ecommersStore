@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Test - ModernStore</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .test-link:hover {
+            background-color: #1d4ed8;
+        }
+        .instructions {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Dashboard Test</h1>
+    
+    <div class="instructions">
+        <h2>Testing Instructions:</h2>
+        <ol>
+            <li>Click the "Open Main Site" link below to open the main eCommerce site</li>
+            <li>In the address bar, manually navigate to the admin page by adding <code>#admin-hidden</code> to the URL</li>
+            <li>You should see the Admin Dashboard with a product management table</li>
+            <li>Test the following features:
+                <ul>
+                    <li>View all products in the admin table</li>
+                    <li>Click "Add New Product" to add a product</li>
+                    <li>Click "Edit" on any product to modify it</li>
+                    <li>Click "Delete" on any product to remove it</li>
+                    <li>Click "Refresh" to reload the product table</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <p><strong>Note:</strong> The admin page is hidden and not accessible through normal navigation. It can only be accessed via the direct URL hash <code>#admin-hidden</code>.</p>
+    </div>
+    
+    <a href="home.html" class="test-link">Open Main Site</a>
+    <a href="admin.html#admin-hidden" class="test-link">Direct Link to Admin Dashboard</a>
+    
+    <h2>Expected Admin Features:</h2>
+    <ul>
+        <li>✅ Hidden admin page accessible only via "/admin-hidden" hash route</li>
+        <li>✅ Product management table with all current products</li>
+        <li>✅ Add new product functionality with modal form</li>
+        <li>✅ Edit existing product functionality</li>
+        <li>✅ Delete product functionality with confirmation</li>
+        <li>✅ Refresh products table</li>
+        <li>✅ Admin-only styling and layout</li>
+        <li>✅ No links to admin page in regular navigation</li>
+        <li>✅ Responsive design for mobile devices</li>
+        <li>✅ Form validation and user feedback</li>
+        <li>✅ Success/error notifications</li>
+    </ul>
+</body>
+</html>
