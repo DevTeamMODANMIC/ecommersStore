@@ -1,0 +1,375 @@
+/**
+ * Navigation Styles for ModernStore
+ * Responsive navigation with mobile menu support
+ */
+
+/* Header and Navigation */
+.header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    gap: 2rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.logo:hover {
+    color: #764ba2;
+}
+
+/* Desktop Navigation */
+.nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-links a:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.nav-links a.active {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.15);
+}
+
+.nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
+    background: #667eea;
+    border-radius: 1px;
+}
+
+/* Search Bar */
+.search {
+    flex: 1;
+    max-width: 400px;
+}
+
+.search input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Cart Button */
+.cart-btn {
+    position: relative;
+    background: none;
+    border: none;
+    color: #374151;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-btn:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: bounce 0.3s ease;
+}
+
+@keyframes bounce {
+    0%, 20%, 60%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    80% { transform: translateY(-5px); }
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    gap: 4px;
+}
+
+.mobile-menu-toggle span,
+.hamburger-line {
+    width: 25px;
+    height: 3px;
+    background: #374151;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle:hover span,
+.mobile-menu-toggle:hover .hamburger-line {
+    background: #667eea;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.mobile-nav.active {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.mobile-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 1rem 0;
+}
+
+.mobile-nav li {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.mobile-nav li:last-child {
+    border-bottom: none;
+}
+
+.mobile-nav a {
+    display: block;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav a:hover,
+.mobile-nav a.active {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* Admin Navigation Styles */
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.nav-brand .brand-link {
+    text-decoration: none;
+}
+
+.brand-title {
+    color: #667eea;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* Skip Link for Accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #667eea;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 10000;
+    transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .search {
+        max-width: 200px;
+    }
+    
+    .search input {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .nav {
+        gap: 1rem;
+    }
+    
+    /* Admin mobile navigation */
+    .nav-menu {
+        display: none;
+    }
+    
+    .nav-container {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .search {
+        display: none;
+    }
+    
+    .nav {
+        gap: 0.5rem;
+    }
+    
+    .logo {
+        font-size: 1.25rem;
+    }
+}
+
+/* Cart Sidebar Styles */
+#cartSidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 10001;
+    overflow-y: auto;
+}
+
+#cartSidebar.active {
+    right: 0;
+}
+
+#cartOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 10000;
+}
+
+#cartOverlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 480px) {
+    #cartSidebar {
+        width: 100vw;
+        right: -100vw;
+    }
+}

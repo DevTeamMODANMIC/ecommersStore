@@ -34,11 +34,14 @@
         
         /* Header */
         .header {
-            background: var(--white);
-            border-bottom: 1px solid var(--gray-200);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .nav {
@@ -52,8 +55,17 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
         }
         
         .search {
@@ -85,11 +97,37 @@
             text-decoration: none;
             color: var(--gray-600);
             font-weight: 500;
-            transition: color 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         
-        .nav-links a:hover { color: var(--primary); }
-        .nav-links a.active { color: var(--primary); font-weight: 600; }
+        .nav-links a:hover { 
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .nav-links a.active { 
+            color: var(--primary); 
+            font-weight: 600;
+            background: rgba(59, 130, 246, 0.1);
+            position: relative;
+        }
+        
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
         
         .cart-btn {
             position: relative;
@@ -97,14 +135,18 @@
             border: none;
             color: var(--gray-600);
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.2s;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .cart-btn:hover {
             color: var(--primary);
-            background: var(--gray-100);
+            background: rgba(59, 130, 246, 0.1);
+            transform: scale(1.02);
         }
         
         .cart-count {
@@ -541,7 +583,16 @@
             background: var(--white);
             border-top: 1px solid var(--gray-200);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 50;
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .mobile-nav.active {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
         }
         
         .mobile-nav.show {
@@ -736,6 +787,20 @@
         </div>
     </section>
 
+    <!-- Admin Access Popup -->
+    <div id="adminPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-width: 400px; width: 90%;">
+            <h3 style="margin: 0 0 1rem 0; color: #1f2937; text-align: center;">🔒 Admin Access</h3>
+            <p style="margin: 0 0 0.5rem 0; color: #6b7280; text-align: center;">Enter admin password to continue</p>
+            <p style="margin: 0 0 1.5rem 0; color: #9ca3af; text-align: center; font-size: 0.8rem;">Secret code: Ctrl+Shift+A</p>
+            <input type="password" id="adminPasswordInput" placeholder="Enter password..." style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem; margin-bottom: 1rem; outline: none;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button onclick="submitAdminPassword()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Access Admin</button>
+                <button onclick="closeAdminPopup()" style="flex: 1; background: #6b7280; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -753,20 +818,20 @@
                 <div>
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="src/pages/products.html">Products</a></li>
+                        <li><a href="src/pages/about.html">About</a></li>
+                        <li><a href="src/pages/contact.html">Contact</a></li>
                     </ul>
                 </div>
                 
                 <div>
                     <h4>Support</h4>
                     <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Shipping</a></li>
-                        <li><a href="#">Returns</a></li>
-                        <li><a href="#">Privacy</a></li>
+                        <li><a href="src/pages/contact.html">Help Center</a></li>
+                        <li><a href="#" onclick="showAdminPopup()">Shipping Info</a></li>
+                        <li><a href="#" onclick="showAdminPopup()">Returns Policy</a></li>
+                        <li><a href="#" onclick="showAdminPopup()">Privacy Policy</a></li>
                     </ul>
                 </div>
                 
@@ -920,19 +985,6 @@
         });
     </script>
 
-    <!-- Admin Access Popup -->
-    <div id="adminPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-width: 400px; width: 90%;">
-            <h3 style="margin: 0 0 1rem 0; color: #1f2937; text-align: center;">🔒 Admin Access</h3>
-            <p style="margin: 0 0 1.5rem 0; color: #6b7280; text-align: center;">Enter admin password to continue</p>
-            <input type="password" id="adminPasswordInput" placeholder="Enter password..." style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem; margin-bottom: 1rem; outline: none;">
-            <div style="display: flex; gap: 0.5rem;">
-                <button onclick="submitAdminPassword()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Access Admin</button>
-                <button onclick="closeAdminPopup()" style="flex: 1; background: #6b7280; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Admin Access from Main Page -->
     <script>
         // Secret admin access from main page with Ctrl+Shift+S + popup password input
@@ -1001,6 +1053,178 @@
                 closeAdminPopup();
             }
         };
+
+        // Secret admin access - Ctrl+Shift+A (improved version)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up secret code...');
+            console.log('🔑 Secret code: Ctrl+Shift+A');
+            
+            // Track key states for better detection
+            let keys = {
+                ctrl: false,
+                shift: false,
+                a: false
+            };
+            
+            // Key down handler
+            document.addEventListener('keydown', function(event) {
+                // Update key states
+                if (event.key === 'Control') keys.ctrl = true;
+                if (event.key === 'Shift') keys.shift = true;
+                if (event.key.toLowerCase() === 'a') keys.a = true;
+                
+                // Debug logging
+                console.log('Key pressed:', event.key, '| Ctrl:', keys.ctrl, 'Shift:', keys.shift, 'A:', keys.a);
+                
+                // Check for Ctrl+Shift+A combination
+                if (keys.ctrl && keys.shift && keys.a) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    console.log('🔑 SECRET CODE DETECTED! Ctrl+Shift+A pressed!');
+                    console.log('🚀 Opening admin popup...');
+                    showAdminPopup();
+                    
+                    // Reset keys to prevent multiple triggers
+                    keys = { ctrl: false, shift: false, a: false };
+                    return false;
+                }
+            });
+            
+            // Key up handler to reset states
+            document.addEventListener('keyup', function(event) {
+                if (event.key === 'Control') keys.ctrl = false;
+                if (event.key === 'Shift') keys.shift = false;
+                if (event.key.toLowerCase() === 'a') keys.a = false;
+            });
+            
+            console.log('✅ Secret code listener active - Press Ctrl+Shift+A');
+        });
+
+        // Admin popup functions
+        function showAdminPopup() {
+            console.log('showAdminPopup called');
+            const popup = document.getElementById('adminPopup');
+            const input = document.getElementById('adminPasswordInput');
+            
+            if (popup) {
+                console.log('Popup element found, showing...');
+                popup.style.display = 'flex';
+                popup.style.alignItems = 'center';
+                popup.style.justifyContent = 'center';
+                if (input) {
+                    input.value = '';
+                    setTimeout(() => input.focus(), 100);
+                    console.log('Popup should be visible now');
+                } else {
+                    console.error('Password input not found');
+                }
+            } else {
+                console.error('Admin popup element not found');
+            }
+        }
+
+        function closeAdminPopup() {
+            document.getElementById('adminPopup').style.display = 'none';
+        }
+
+        function submitAdminPassword() {
+            const input = document.getElementById('adminPasswordInput');
+            const password = input.value.trim(); // Don't convert to lowercase
+            
+            console.log('Password entered:', password);
+            
+            if (password === 'admin123') {
+                console.log('✅ Password correct! Redirecting to admin...');
+                closeAdminPopup();
+                
+                // Add admin access flag to localStorage
+                localStorage.setItem('modernstore_admin_access', 'true');
+                localStorage.setItem('modernstore_admin_timestamp', Date.now().toString());
+                
+                // Add a small delay to ensure popup closes
+                setTimeout(() => {
+                    console.log('🚀 Navigating to admin page...');
+                    const adminUrl = 'src/pages/admin.html';
+                    console.log('Admin URL:', adminUrl);
+                    console.log('Current location:', window.location.href);
+                    console.log('Resolved URL:', new URL(adminUrl, window.location.href).href);
+                    
+                    // Try direct navigation
+                    window.location.href = adminUrl;
+                }, 300);
+            } else {
+                console.log('❌ Incorrect password:', password);
+                input.style.borderColor = '#ef4444';
+                input.value = '';
+                input.placeholder = 'Incorrect password. Try again...';
+                setTimeout(() => {
+                    input.style.borderColor = '#e5e7eb';
+                    input.placeholder = 'Enter password...';
+                }, 2000);
+            }
+        }
+
+        // Navigation Functions
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (mobileNav) {
+                const isOpen = mobileNav.classList.contains('active');
+                
+                if (isOpen) {
+                    mobileNav.classList.remove('active');
+                    menuToggle?.setAttribute('aria-expanded', 'false');
+                } else {
+                    mobileNav.classList.add('active');
+                    menuToggle?.setAttribute('aria-expanded', 'true');
+                }
+            }
+        }
+
+        function toggleCart() {
+            // Direct navigation to cart page
+            window.location.href = 'src/pages/cart.html';
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            const cartCount = document.getElementById('cartCount');
+            const cart = JSON.parse(localStorage.getItem('modernstore_cart') || '[]');
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            
+            if (cartCount) {
+                cartCount.textContent = totalItems;
+                cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        // Initialize navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            
+            // Close mobile menu when clicking on nav links
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav a');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const mobileNav = document.getElementById('mobileNav');
+                    const menuToggle = document.querySelector('.mobile-menu-toggle');
+                    mobileNav?.classList.remove('active');
+                    menuToggle?.setAttribute('aria-expanded', 'false');
+                });
+            });
+        });
+
+        // Close mobile menu on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                const mobileNav = document.getElementById('mobileNav');
+                const menuToggle = document.querySelector('.mobile-menu-toggle');
+                mobileNav?.classList.remove('active');
+                menuToggle?.setAttribute('aria-expanded', 'false');
+            }
+        });
     </script>
+
 </body>
 </html>

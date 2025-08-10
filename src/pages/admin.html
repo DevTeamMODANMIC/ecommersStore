@@ -319,7 +319,7 @@
                 </ul>
                 
                 <!-- Cart Button -->
-                <button class="cart-btn" onclick="toggleCart()" style="position: relative; background: none; border: none; color: var(--gray-600); cursor: pointer; padding: 0.5rem;">
+                <button class="cart-btn" onclick="window.location.href='cart.html'" style="position: relative; background: none; border: none; color: var(--gray-600); cursor: pointer; padding: 0.5rem;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -432,12 +432,28 @@
     </div>
 
     <!-- Access Denied Section -->
-    <div id="access-denied" class="access-denied">
-        <div class="container">
-            <h1>🔒 Access Denied</h1>
-            <p>This area is restricted to authorized personnel only.</p>
-            <div class="access-hint">
-                Hint: Use the secret key combination to access admin panel...
+    <div id="access-denied" class="access-denied" style="display: none;">
+        <div class="container" style="text-align: center; padding: 4rem 1rem; min-height: 60vh; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 3rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 500px;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🔒</div>
+                <h1 style="color: #ef4444; margin-bottom: 1rem;">Access Denied</h1>
+                <p style="color: #6b7280; margin-bottom: 1rem;">This area is restricted to authorized personnel only.</p>
+                <div style="color: #3b82f6; font-style: italic; margin-bottom: 2rem;">
+                    <strong>Method 1:</strong> Press Ctrl+Shift+S for popup<br>
+                    <strong>Method 2:</strong> Type admin123 directly here<br>
+                    <strong>Method 3:</strong> Just type admin123 anywhere on this page
+                </div>
+                
+                <!-- Direct password input on access denied screen -->
+                <div style="margin-bottom: 2rem; max-width: 300px; margin-left: auto; margin-right: auto;">
+                    <input type="password" id="directPasswordInput" placeholder="Enter admin password..." style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem; text-align: center; background: rgba(255,255,255,0.9); margin-bottom: 0.5rem;">
+                    <button onclick="checkDirectPassword()" style="width: 100%; background: #3b82f6; color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; font-weight: 500; cursor: pointer;">Access Admin</button>
+                </div>
+                
+                <div>
+                    <button onclick="window.location.href='../../index.html'" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; margin-right: 1rem;">Go to Homepage</button>
+                    <button onclick="location.reload()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500;">Refresh Page</button>
+                </div>
             </div>
         </div>
     </div>
@@ -467,6 +483,27 @@
             if (event.ctrlKey && event.shiftKey && (event.key === 'S' || event.key === 's')) {
                 event.preventDefault();
                 showAdminPopup();
+            }
+            
+            // Also listen for direct typing of admin123
+            if (!adminAccess) {
+                // Build password as user types anywhere on page
+                if (event.key.length === 1) {
+                    passwordBuffer += event.key.toLowerCase();
+                    
+                    // Keep only last 10 characters
+                    if (passwordBuffer.length > 10) {
+                        passwordBuffer = passwordBuffer.slice(-10);
+                    }
+                    
+                    // Check if password matches
+                    if (passwordBuffer.includes('admin123')) {
+                        grantAdminAccess();
+                        passwordBuffer = '';
+                    }
+                } else if (event.key === 'Backspace') {
+                    passwordBuffer = passwordBuffer.slice(0, -1);
+                }
             }
         });
 
@@ -498,16 +535,7 @@
             
             if (password === 'admin123') {
                 closeAdminPopup();
-                adminAccess = true;
-                
-                // Show admin interface
-                document.getElementById('access-denied').style.display = 'none';
-                document.querySelector('.header').style.display = 'block';
-                document.querySelector('.main-content').style.display = 'block';
-                document.querySelector('.footer').style.display = 'block';
-                
-                // Show success notification
-                showNotification('Admin access granted!', 'success');
+                grantAdminAccess();
             } else {
                 // Show error message
                 input.style.borderColor = '#ef4444';
@@ -521,6 +549,37 @@
             }
         }
 
+        function checkDirectPassword() {
+            const input = document.getElementById('directPasswordInput');
+            const password = input.value.toLowerCase();
+            
+            if (password === 'admin123') {
+                grantAdminAccess();
+            } else {
+                input.style.borderColor = '#ef4444';
+                input.value = '';
+                input.placeholder = 'Incorrect password. Try again...';
+                
+                setTimeout(() => {
+                    input.style.borderColor = '#e5e7eb';
+                    input.placeholder = 'Or type password here...';
+                }, 2000);
+            }
+        }
+
+        function grantAdminAccess() {
+            adminAccess = true;
+            
+            // Show admin interface
+            document.getElementById('access-denied').style.display = 'none';
+            document.querySelector('.header').style.display = 'block';
+            document.querySelector('.main-content').style.display = 'block';
+            document.querySelector('.footer').style.display = 'block';
+            
+            // Show success notification
+            showNotification('Admin access granted!', 'success');
+        }
+
         // Close popup when clicking outside
         document.getElementById('adminPopup').onclick = function(event) {
             if (event.target === this) {
@@ -530,12 +589,11 @@
         
         // Check access on page load
         window.addEventListener('load', function() {
-            if (!adminAccess) {
-                document.getElementById('access-denied').style.display = 'block';
-                document.querySelector('.header').style.display = 'none';
-                document.querySelector('.main-content').style.display = 'none';
-                document.querySelector('.footer').style.display = 'none';
-            }
+            // Always show access denied initially
+            document.getElementById('access-denied').style.display = 'block';
+            document.querySelector('.header').style.display = 'none';
+            document.querySelector('.main-content').style.display = 'none';
+            document.querySelector('.footer').style.display = 'none';
         });
         
         function showNotification(message, type = 'success') {
@@ -632,8 +690,46 @@
             }
         }
 
+        // Check admin access
+        function checkAdminAccess() {
+            console.log('🔍 Checking admin access...');
+            
+            // Check for the admin access flags from homepage
+            const hasAccess = localStorage.getItem('modernstore_admin_access') === 'true';
+            const accessTimestamp = localStorage.getItem('modernstore_admin_timestamp');
+            const currentTime = Date.now();
+            const accessAge = currentTime - parseInt(accessTimestamp || '0');
+            const maxAge = 30 * 60 * 1000; // 30 minutes
+            
+            console.log('Admin access check:', {
+                hasAccess,
+                accessTimestamp,
+                accessAge: Math.round(accessAge / 1000 / 60) + ' minutes',
+                maxAge: Math.round(maxAge / 1000 / 60) + ' minutes'
+            });
+            
+            if (!hasAccess || accessAge > maxAge) {
+                console.log('❌ Access denied - showing access denied section');
+                // Show access denied section
+                document.getElementById('access-denied').style.display = 'block';
+                document.getElementById('admin-hidden').style.display = 'none';
+                return false;
+            }
+            
+            console.log('✅ Access granted - showing admin interface');
+            // Show admin interface
+            document.getElementById('access-denied').style.display = 'none';
+            document.getElementById('admin-hidden').style.display = 'block';
+            return true;
+        }
+
         // Handle add product form
         document.addEventListener('DOMContentLoaded', function() {
+            // Check access first
+            if (!checkAdminAccess()) {
+                return; // Stop here if access denied
+            }
+            
             // Load products on page load
             loadAdminProducts();
             

@@ -351,6 +351,80 @@
             .products-section { padding: 2rem 0; }
             .products-grid { grid-template-columns: 1fr; }
         }
+        
+        /* Mobile Navigation Styles */
+        .mobile-nav {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-top: 1px solid var(--gray-200);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .mobile-nav.active {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .mobile-nav ul {
+            list-style: none;
+            padding: 1rem 0;
+            margin: 0;
+        }
+        
+        .mobile-nav li {
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .mobile-nav a {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .mobile-nav a:hover,
+        .mobile-nav a.active {
+            background: var(--gray-50);
+            color: var(--primary);
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            gap: 4px;
+        }
+        
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--gray-600);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-toggle:hover span {
+            background: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-toggle { display: flex; }
+        }
     </style>
 </head>
 
@@ -380,7 +454,23 @@
                     </svg>
                     <span class="cart-count" id="cartCount">0</span>
                 </button>
+                
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </nav>
+            
+            <!-- Mobile Navigation -->
+            <div class="mobile-nav" id="mobileNav">
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="products.html" class="active">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
         </div>
     </header>
 
@@ -462,10 +552,10 @@
                 <div>
                     <h4>Support</h4>
                     <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Shipping</a></li>
-                        <li><a href="#">Returns</a></li>
-                        <li><a href="#">Privacy</a></li>
+                        <li><a href="contact.html">Help Center</a></li>
+                        <li><a href="../../index.html#shipping">Shipping Info</a></li>
+                        <li><a href="../../index.html#returns">Returns Policy</a></li>
+                        <li><a href="../../index.html#privacy">Privacy Policy</a></li>
                     </ul>
                 </div>
                 
@@ -582,9 +672,8 @@
         }
 
         function toggleCart() {
-            if (cart.length === 0) return showNotification('Your cart is empty');
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            showNotification(`Cart: ${cart.length} items. Total: $${total.toFixed(2)}`);
+            // Direct navigation to cart page
+            window.location.href = 'cart.html';
         }
 
         function showNotification(message) {
@@ -594,6 +683,48 @@
             document.body.appendChild(div);
             setTimeout(() => div.remove(), 3000);
         }
+
+        // Navigation Functions
+        function toggleMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (mobileNav) {
+                const isOpen = mobileNav.classList.contains('active');
+                
+                if (isOpen) {
+                    mobileNav.classList.remove('active');
+                    menuToggle?.setAttribute('aria-expanded', 'false');
+                } else {
+                    mobileNav.classList.add('active');
+                    menuToggle?.setAttribute('aria-expanded', 'true');
+                }
+            }
+        }
+
+        // Initialize navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close mobile menu when clicking on nav links
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav a');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const mobileNav = document.getElementById('mobileNav');
+                    const menuToggle = document.querySelector('.mobile-menu-toggle');
+                    mobileNav?.classList.remove('active');
+                    menuToggle?.setAttribute('aria-expanded', 'false');
+                });
+            });
+        });
+
+        // Close mobile menu on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                const mobileNav = document.getElementById('mobileNav');
+                const menuToggle = document.querySelector('.mobile-menu-toggle');
+                mobileNav?.classList.remove('active');
+                menuToggle?.setAttribute('aria-expanded', 'false');
+            }
+        });
     </script>
 </body>
 </html>
