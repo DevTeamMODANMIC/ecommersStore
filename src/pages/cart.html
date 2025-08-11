@@ -635,10 +635,61 @@
 
     <!-- JavaScript -->
     <script>
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const CART_KEY = 'modernstore_cart';
+        const LEGACY_CART_KEY = 'cart';
+        let cart = [];
+
+        function safeParse(json) {
+            try { return JSON.parse(json); } catch { return null; }
+        }
+
+        function validateCartItems(items) {
+            if (!Array.isArray(items)) return [];
+            return items
+                .filter(it => it && typeof it === 'object')
+                .map(it => ({
+                    id: Number(it.id) || Date.now(),
+                    name: String(it.name || 'Product'),
+                    price: Number(it.price) || 0,
+                    quantity: Math.max(1, Number(it.quantity) || 1),
+                    image: String(it.image || 'https://via.placeholder.com/100x100?text=Item'),
+                    category: String(it.category || 'General')
+                }))
+                .filter(it => it.price >= 0 && it.quantity > 0);
+        }
+
+        function readCart() {
+            // Prefer namespaced key
+            let items = validateCartItems(safeParse(localStorage.getItem(CART_KEY)) || []);
+            // Migrate legacy key if needed
+            // Only migrate legacy key when served over HTTP(S) to avoid picking up
+            // unrelated data when opening via file:// without a dev server.
+            if (!items.length && (location.protocol === 'http:' || location.protocol === 'https:')) {
+                const legacy = validateCartItems(safeParse(localStorage.getItem(LEGACY_CART_KEY)) || []);
+                if (legacy.length) {
+                    items = legacy;
+                    writeCart(items);
+                    try { localStorage.removeItem(LEGACY_CART_KEY); } catch {}
+                }
+            }
+            return items;
+        }
+
+        function writeCart(items) {
+            localStorage.setItem(CART_KEY, JSON.stringify(items));
+        }
+
+        function clearCart() {
+            cart = [];
+            writeCart(cart);
+            renderCart();
+            updateCartCount();
+            showNotification('Cart cleared');
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            cart = readCart();
             renderCart();
             updateCartCount();
         });
@@ -710,7 +761,8 @@
                         <button class="btn btn-primary" onclick="proceedToCheckout()">
                             Proceed to Checkout
                         </button>
-                        <a href="products.html" class="btn btn-secondary">Continue Shopping</a>
+                        <a href="products.html" class="btn btn-secondary" style="margin-bottom:0.5rem;">Continue Shopping</a>
+                        <button class="btn btn-secondary" onclick="clearCart()">Clear Cart</button>
                     </div>
                 </div>
             `;
