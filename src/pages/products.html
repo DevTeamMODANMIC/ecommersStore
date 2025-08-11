@@ -589,14 +589,32 @@
             {id: 8, name: "Designer Sunglasses", description: "Stylish sunglasses with UV protection", price: 179.99, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80", category: "Fashion"}
         ];
 
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const CART_KEY = 'modernstore_cart';
+        const LEGACY_CART_KEY = 'cart';
         let filteredProducts = [...allProducts];
+
+        function safeParse(json) { try { return JSON.parse(json); } catch { return null; } }
+        function validateCartItems(items) {
+            if (!Array.isArray(items)) return [];
+            return items.filter(it => it && typeof it === 'object');
+        }
+        function readCart() {
+            const current = validateCartItems(safeParse(localStorage.getItem(CART_KEY)) || []);
+            return current;
+        }
+        function writeCart(items) {
+            localStorage.setItem(CART_KEY, JSON.stringify(items));
+            try { localStorage.removeItem(LEGACY_CART_KEY); } catch {}
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             renderProducts();
             updateCartCount();
             setupSearch();
+        });
+        window.addEventListener('storage', function(e) {
+            if (e.key === CART_KEY) updateCartCount();
         });
 
         function renderProducts() {
@@ -651,10 +669,11 @@
 
         function addToCart(id) {
             const product = allProducts.find(p => p.id === id);
+            let cart = readCart();
             const existing = cart.find(item => item.id === id);
             if (existing) existing.quantity += 1;
             else cart.push({...product, quantity: 1});
-            localStorage.setItem('cart', JSON.stringify(cart));
+            writeCart(cart);
             updateCartCount();
             showNotification(`${product.name} added to cart!`);
         }
@@ -665,16 +684,23 @@
         }
 
         function updateCartCount() {
-            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const items = readCart();
+            const count = items.reduce((sum, item) => sum + (Number(item.quantity)||0), 0);
             const cartCount = document.getElementById('cartCount');
-            cartCount.textContent = count;
-            cartCount.style.display = count > 0 ? 'block' : 'none';
+            if (cartCount) {
+                cartCount.textContent = count;
+                cartCount.style.display = count > 0 ? 'block' : 'none';
+            }
         }
 
         function toggleCart() {
             // Direct navigation to cart page
             window.location.href = 'cart.html';
         }
+        // Also update cart count on visibility change (handles file:// reload quirks)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) updateCartCount();
+        });
 
         function showNotification(message) {
             const div = document.createElement('div');

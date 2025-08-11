@@ -662,9 +662,9 @@
             // Prefer namespaced key
             let items = validateCartItems(safeParse(localStorage.getItem(CART_KEY)) || []);
             // Migrate legacy key if needed
-            // Only migrate legacy key when served over HTTP(S) to avoid picking up
-            // unrelated data when opening via file:// without a dev server.
-            if (!items.length && (location.protocol === 'http:' || location.protocol === 'https:')) {
+            // Migrate legacy key from 'cart' if namespaced storage is empty.
+            // This runs once and removes the legacy key to avoid duplicates.
+            if (!items.length) {
                 const legacy = validateCartItems(safeParse(localStorage.getItem(LEGACY_CART_KEY)) || []);
                 if (legacy.length) {
                     items = legacy;
@@ -692,6 +692,8 @@
             cart = readCart();
             renderCart();
             updateCartCount();
+            // Clean up any duplicated legacy writes under file:// when navigating back/forward
+            try { localStorage.removeItem(LEGACY_CART_KEY); } catch {}
         });
 
         function renderCart() {
@@ -793,10 +795,12 @@
         }
 
         function updateCartCount() {
-            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const count = cart.reduce((sum, item) => sum + (Number(item.quantity)||0), 0);
             const cartCount = document.getElementById('cartCount');
-            cartCount.textContent = count;
-            cartCount.style.display = count > 0 ? 'block' : 'none';
+            if (cartCount) {
+                cartCount.textContent = count;
+                cartCount.style.display = count > 0 ? 'block' : 'none';
+            }
         }
 
         function proceedToCheckout() {
