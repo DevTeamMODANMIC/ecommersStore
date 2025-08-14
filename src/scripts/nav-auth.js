@@ -7,20 +7,20 @@
   }
 
   function paths(base){
-    // Use robust relative paths that work whether we are at root or inside /src/pages/
-    const path = window.location.pathname.replace(/\\/g,'/');
-    const inPages = /\/src\/pages\//.test(path);
-    const rootPath = inPages ? '../' : '';
-    const pagePath = inPages ? '' : 'src/pages/';
+    // Pin links to the current origin so Home always resolves to your root index.html
+    // Example base: http://127.0.0.1:5502/
+    const origin = window.location.origin;
+    const root = origin + '/';
+    const pages = root + 'src/pages/';
     return {
-      home: `${rootPath}index.html`,
-      products: `${pagePath}products.html`,
-      about: `${pagePath}about.html`,
-      contact: `${pagePath}contact.html`,
-      orders: `${pagePath}orders.html`,
-      login: `${pagePath}login.html`,
-      register: `${pagePath}register.html`,
-      cart: `${pagePath}cart.html`
+      home: root + 'index.html',
+      products: pages + 'products.html',
+      about: pages + 'about.html',
+      contact: pages + 'contact.html',
+      orders: pages + 'orders.html',
+      login: pages + 'login.html',
+      register: pages + 'register.html',
+      cart: pages + 'cart.html'
     };
   }
 
@@ -129,14 +129,31 @@
       .header .mobile-nav a{display:block;padding:1rem 1.25rem;color:#4b5563;text-decoration:none;font-weight:500}
       .header .mobile-nav a:hover{background:#f9fafb;color:#3b82f6}
       @media(max-width:768px){.header .nav-links{display:none}.header .mobile-menu-toggle{display:flex}.header .nav{position:relative}}
+      /* Global loader */
+      .app-loader{position:fixed;inset:0;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:2000;opacity:1;transition:opacity .35s ease}
+      .app-loader.hidden{opacity:0;pointer-events:none}
+      .app-spinner{width:44px;height:44px;border:3px solid #e5e7eb;border-top-color:#3b82f6;border-radius:50%;animation:navSpin 1s linear infinite}
+      @keyframes navSpin{to{transform:rotate(360deg)}}
     `;
     document.head.appendChild(s);
+  }
+
+  function ensureLoader(){
+    if (document.getElementById('appLoader')) return;
+    const d = document.createElement('div');
+    d.id = 'appLoader';
+    d.className = 'app-loader';
+    d.setAttribute('aria-label','Loading');
+    d.setAttribute('role','status');
+    d.innerHTML = '<div class="app-spinner" aria-hidden="true"></div>';
+    document.body.appendChild(d);
   }
 
   function init(){
     const base = getBase();
     const user = window.Auth ? Auth.getCurrentUser() : null;
     ensureHeaderStyles();
+    ensureLoader();
     let header = document.querySelector('header.header');
     if (!header){ header = document.createElement('header'); header.className='header'; document.body.prepend(header); }
     header.setAttribute('role','banner');
@@ -217,6 +234,13 @@
 
     // Highlight
     highlightActiveLinks(header);
+
+    // Hide loader after 2-3 seconds (randomized within range for natural feel)
+    const loader = document.getElementById('appLoader');
+    if (loader){
+      const delay = 2000 + Math.floor(Math.random()*1000); // 2000-2999ms
+      setTimeout(()=> loader.classList.add('hidden'), delay);
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

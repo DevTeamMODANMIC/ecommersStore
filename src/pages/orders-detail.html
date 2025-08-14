@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Details - ModernStore</title>
+  <style>
+    :root { --primary:#3b82f6; --primary-dark:#2563eb; --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb; --gray-300:#d1d5db; --gray-600:#4b5563; --gray-900:#111827; --white:#fff; --success:#10b981; --warning:#f59e0b; --error:#ef4444; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;color:var(--gray-900);background:var(--gray-50)}
+    .container{max-width:1200px;margin:0 auto;padding:0 1rem}
+    .page{padding:2rem 0 3rem}
+    h1{font-size:2rem;margin-bottom:1rem}
+    .muted{color:var(--gray-600)}
+    .card{background:var(--white);border:1px solid var(--gray-200);border-radius:1rem;box-shadow:0 1px 3px rgba(0,0,0,.1);padding:1.25rem}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem}
+    .section{margin-bottom:1rem}
+    .items{display:flex;flex-direction:column;gap:.75rem;margin-top:.75rem}
+    .item{display:flex;gap:.75rem;align-items:center}
+    .item img{width:64px;height:64px;border-radius:.5rem;object-fit:cover}
+    .item .title{font-weight:600}
+    .row{display:flex;justify-content:space-between;margin-top:.35rem}
+    .total{border-top:1px solid var(--gray-200);padding-top:.5rem;margin-top:.5rem;font-weight:700}
+    .actions{display:flex;gap:.5rem;margin-top:1rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.6rem 1rem;border:none;border-radius:.6rem;font-weight:600;cursor:pointer;text-decoration:none}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-secondary{background:var(--white);color:var(--gray-600);border:1px solid var(--gray-200)}
+    /* timeline */
+    .timeline{position:relative;padding-left:1rem;margin-top:.75rem}
+    .timeline::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--gray-200)}
+    .tl-item{position:relative;padding-left:1.25rem;margin-bottom:.75rem}
+    .tl-item::before{content:"";position:absolute;left:-2px;top:.2rem;width:10px;height:10px;border-radius:50%;background:var(--gray-300);border:2px solid var(--white);box-shadow:0 0 0 2px var(--gray-200)}
+    .tl-item.good::before{background:var(--primary)}
+    .empty{background:var(--white);border:1px solid var(--gray-200);border-radius:1rem;padding:2rem;text-align:center}
+  </style>
+</head>
+<body>
+  <main class="container page">
+    <div id="content"></div>
+  </main>
+
+  <script src="../scripts/utils/auth-utils.js"></script>
+  <script src="../scripts/utils/orders-utils.js"></script>
+  <script src="../scripts/nav-auth.js"></script>
+  <script>
+    function fmtCurrency(n){ try{return '$'+Number(n).toFixed(2);}catch(e){return '$0.00';} }
+    function fmtDate(ts){ try{return new Date(ts).toLocaleString();}catch(e){return '';} }
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const container = document.getElementById('content');
+
+    if (!id){
+      container.innerHTML = `<div class="empty"><h2>Order not specified</h2><p class="muted">No order ID was provided.</p><div class="actions" style="justify-content:center;margin-top:1rem"><a class="btn btn-primary" href="orders.html">Back to My Orders</a><a class="btn btn-secondary" href="../index.html">Continue Shopping</a></div></div>`;
+    } else {
+      const order = (window.Orders && Orders.getOrderById) ? Orders.getOrderById(id) : null;
+      const user = (window.Auth && Auth.getCurrentUser && Auth.getCurrentUser()) || null;
+
+      if (!order){
+        container.innerHTML = `<div class="empty"><h2>Order not found</h2><p class="muted">We couldn't find an order with ID ${id}.</p><div class="actions" style="justify-content:center;margin-top:1rem"><a class="btn btn-primary" href="orders.html">Back to My Orders</a></div></div>`;
+      } else if (order.userId && (!user || user.id !== order.userId)) {
+        container.innerHTML = `<div class="empty"><h2>Not authorized</h2><p class="muted">Please sign in to view this order.</p><div class="actions" style="justify-content:center;margin-top:1rem"><a class="btn btn-primary" href="login.html">Login</a></div></div>`;
+      } else {
+        const statusHistory = (order.history||[]).map(h=>
+          `<div class="tl-item ${h.status==='Placed'||h.status==='Processing'||h.status==='Shipped'||h.status==='Delivered'?'good':''}">
+             <div><strong>${h.status}</strong></div>
+             <div class="muted">${fmtDate(h.at)}</div>
+           </div>`).join('');
+
+        container.innerHTML = `
+          <h1>Order #${order.id}</h1>
+          <p class="muted">Placed on ${fmtDate(order.createdAt)}</p>
+          <div class="grid" style="margin-top:1rem">
+            <div class="card">
+              <div class="section"><strong>Items</strong>
+                <div class="items">
+                  ${order.items.map(it => `
+                    <div class="item">
+                      <img src="${it.image}" alt="${it.name}"/>
+                      <div>
+                        <div class="title">${it.name}</div>
+                        <div class="muted">Qty: ${it.quantity}</div>
+                      </div>
+                      <div style="margin-left:auto;font-weight:600">${fmtCurrency(it.price*it.quantity)}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <div class="section"><strong>Order Summary</strong>
+                  <div class="row"><span class="muted">Subtotal</span><span>${fmtCurrency(order.subtotal)}</span></div>
+                  <div class="row"><span class="muted">Shipping</span><span>${fmtCurrency(order.shipping)}</span></div>
+                  <div class="row"><span class="muted">Tax</span><span>${fmtCurrency(order.tax)}</span></div>
+                  <div class="row total"><span>Total</span><span>${fmtCurrency(order.total)}</span></div>
+                </div>
+              </div>
+              <div class="card" style="margin-top:1rem">
+                <div class="section"><strong>Status</strong>
+                  <div class="timeline">${statusHistory}</div>
+                </div>
+              </div>
+              <div class="actions">
+                <a class="btn btn-primary" href="orders.html">Back to My Orders</a>
+                <a class="btn btn-secondary" href="../index.html">Continue Shopping</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

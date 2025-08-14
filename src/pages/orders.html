@@ -40,7 +40,8 @@
   </style>
 </head>
 <body>
-  <header class="header">
+  <!-- header removed; injected by nav-auth.js -->
+<!-- header start -->
     <div class="container">
       <nav class="nav">
         <a href="../../index.html" class="logo">ModernStore</a>
@@ -51,7 +52,7 @@
         </ul>
       </nav>
     </div>
-  </header>
+  <!-- header end -->
 
   <main class="container page">
     <div class="title">
@@ -88,6 +89,9 @@
 
     function renderOrderCard(order){
       return `<div class="card">
+        <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
+          <a class="btn btn-secondary" href="orders-detail.html?id=${order.id}">View details</a>
+        </div>
         <div class="order-header">
           <div class="order-id">Order #${order.id}</div>
           <div class="status ${order.status}">${order.status}</div>
