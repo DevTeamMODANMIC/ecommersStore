@@ -713,20 +713,42 @@
                 return;
             }
 
-            // Simulate order processing
+            // Calculate totals (same logic as summary)
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal > 100 ? 0 : 9.99;
+            const tax = subtotal * 0.08;
+            const total = subtotal + shipping + tax;
+
             showNotification('Processing your order...', 'info');
             
             setTimeout(() => {
-                // Clear cart
-                localStorage.removeItem('cart');
-                
-                // Show success and redirect
-                showNotification('Order placed successfully!', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = '../index.html';
-                }, 2000);
-            }, 2000);
+                try {
+                    const user = (window.Auth && Auth.getCurrentUser && Auth.getCurrentUser()) || null;
+                    // Create order
+                    if (window.Orders && Orders.createOrder){
+                        Orders.createOrder({
+                            userId: user ? user.id : null,
+                            items: cart,
+                            subtotal, shipping, tax, total
+                        });
+                    }
+                    // Clear cart
+                    localStorage.removeItem('cart');
+                    
+                    // Success & redirect
+                    showNotification('Order placed successfully!', 'success');
+                    setTimeout(() => {
+                        if (user){
+                            window.location.href = 'orders.html';
+                        } else {
+                            // Encourage login to track order
+                            window.location.href = 'login.html';
+                        }
+                    }, 1200);
+                } catch (e) {
+                    showNotification('Something went wrong placing your order', 'error');
+                }
+            }, 800);
         }
 
         function showNotification(message, type = 'success') {
@@ -743,5 +765,8 @@
             setTimeout(() => div.remove(), 3000);
         }
     </script>
+  <script src="../scripts/utils/auth-utils.js"></script>
+  <script src="../scripts/utils/orders-utils.js"></script>
+  <script src="../scripts/nav-auth.js"></script>
 </body>
 </html>

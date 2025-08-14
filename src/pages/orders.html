@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders - ModernStore</title>
+  <style>
+    :root { --primary:#3b82f6; --primary-dark:#2563eb; --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb; --gray-600:#4b5563; --gray-900:#111827; --white:#fff; --success:#10b981; --warning:#f59e0b; --error:#ef4444; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;color:var(--gray-900);background:var(--gray-50)}
+    .container{max-width:1200px;margin:0 auto;padding:0 1rem}
+    .header{background:var(--white);border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:10}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;gap:2rem}
+    .logo{font-size:1.5rem;font-weight:700;color:var(--primary);text-decoration:none}
+    .nav-links{display:flex;list-style:none;gap:2rem}
+    .nav-links a{text-decoration:none;color:var(--gray-600);font-weight:500}
+    .nav-links a:hover,.nav-links a.active{color:var(--primary)}
+    .page{padding:2rem 0 3rem}
+    .title{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+    h1{font-size:2rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:.6rem 1rem;border:none;border-radius:.6rem;font-weight:600;cursor:pointer;text-decoration:none}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-secondary{background:var(--white);color:var(--gray-600);border:1px solid var(--gray-200)}
+    .card{background:var(--white);border:1px solid var(--gray-200);border-radius:1rem;box-shadow:0 1px 3px rgba(0,0,0,.1);padding:1rem}
+    .orders{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1rem}
+    .order-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gray-100);padding-bottom:.5rem;margin-bottom:.5rem}
+    .order-id{font-weight:700}
+    .status{padding:.25rem .5rem;border-radius:9999px;font-size:.8rem}
+    .status.Placed{background:#e0f2fe;color:#0369a1}
+    .status.Processing{background:#fff7ed;color:#9a3412}
+    .status.Shipped{background:#ecfdf5;color:#065f46}
+    .status.Delivered{background:#e0fbe2;color:#166534}
+    .items{display:flex;flex-direction:column;gap:.5rem;margin:.5rem 0}
+    .item{display:flex;gap:.5rem;align-items:center}
+    .item img{width:56px;height:56px;border-radius:.5rem;object-fit:cover}
+    .item-title{font-weight:600}
+    .row{display:flex;justify-content:space-between}
+    .muted{color:var(--gray-600)}
+    .empty{text-align:center;padding:3rem 1rem;background:var(--white);border:1px solid var(--gray-200);border-radius:1rem}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="../../index.html" class="logo">ModernStore</a>
+        <ul class="nav-links">
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="orders.html" class="active">My Orders</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page">
+    <div class="title">
+      <h1>My Orders</h1>
+      <div>
+        <a class="btn btn-secondary" href="../index.html">Continue Shopping</a>
+        <a class="btn btn-primary" href="login.html" id="authAction">Login/Register</a>
+      </div>
+    </div>
+
+    <div id="ordersContainer"></div>
+  </main>
+
+  <script src="../scripts/utils/auth-utils.js"></script>
+  <script src="../scripts/utils/orders-utils.js"></script>
+  <script>
+    const container = document.getElementById('ordersContainer');
+    const user = Auth.getCurrentUser();
+    const authAction = document.getElementById('authAction');
+
+    if (!user){
+      container.innerHTML = `<div class="empty"><h2>You are not logged in</h2><p class="muted">Login or create an account to track your orders.</p><div style="margin-top:1rem"><a class="btn btn-primary" href="login.html">Login</a> <a class="btn btn-secondary" href="register.html">Create account</a></div></div>`;
+    } else {
+      authAction.textContent = 'Logout';
+      authAction.href = '#';
+      authAction.addEventListener('click', (e)=>{ e.preventDefault(); Auth.logout(); window.location.reload(); });
+      const orders = Orders.getOrdersByUser(user.id);
+      if (!orders.length){
+        container.innerHTML = `<div class="empty"><h2>No orders yet</h2><p class="muted">You haven't placed any orders. Start shopping to place your first order!</p><div style="margin-top:1rem"><a class="btn btn-primary" href="../index.html">Shop now</a></div></div>`;
+      } else {
+        container.innerHTML = `<div class="orders">${orders.map(renderOrderCard).join('')}</div>`;
+      }
+    }
+
+    function renderOrderCard(order){
+      return `<div class="card">
+        <div class="order-header">
+          <div class="order-id">Order #${order.id}</div>
+          <div class="status ${order.status}">${order.status}</div>
+        </div>
+        <div class="items">
+          ${order.items.map(it => `<div class="item"><img src="${it.image}" alt="${it.name}"/><div><div class="item-title">${it.name}</div><div class="muted">Qty: ${it.quantity}</div></div><div style="margin-left:auto;font-weight:600">$${(it.price*it.quantity).toFixed(2)}</div></div>`).join('')}
+        </div>
+        <div class="row"><span class="muted">Subtotal</span><span>$${order.subtotal.toFixed(2)}</span></div>
+        <div class="row"><span class="muted">Shipping</span><span>$${order.shipping.toFixed(2)}</span></div>
+        <div class="row" style="border-top:1px solid var(--gray-200);padding-top:.5rem;margin-top:.5rem"><span class="muted">Total</span><span style="font-weight:700">$${order.total.toFixed(2)}</span></div>
+        <div class="muted" style="margin-top:.5rem">Placed on ${new Date(order.createdAt).toLocaleString()}</div>
+      </div>`;
+    }
+  </script>
+  <script src="../scripts/utils/auth-utils.js"></script>
+  <script src="../scripts/nav-auth.js"></script>
+</body>
+</html>
