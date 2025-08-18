@@ -724,12 +724,25 @@
             setTimeout(() => {
                 try {
                     const user = (window.Auth && Auth.getCurrentUser && Auth.getCurrentUser()) || null;
-                    // Create order
+                    // Create order with customer info
                     if (window.Orders && Orders.createOrder){
+                        const customerInfo = {
+                            name: formData.get('fullName') || 'Guest Customer',
+                            email: formData.get('email') || '',
+                            phone: formData.get('phone') || '',
+                            address: {
+                                street: formData.get('address') || '',
+                                city: formData.get('city') || '',
+                                state: formData.get('state') || '',
+                                zip: formData.get('zipCode') || ''
+                            }
+                        };
+                        
                         Orders.createOrder({
                             userId: user ? user.id : null,
                             items: cart,
-                            subtotal, shipping, tax, total
+                            subtotal, shipping, tax, total,
+                            customerInfo
                         });
                     }
                     // Clear cart
