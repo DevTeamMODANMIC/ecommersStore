@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Redirect Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; background: #f9fafb; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Admin Redirect Diagnostic</h1>
+        
+        <div class="result">
+            <h3>Current Status:</h3>
+            <p><strong>Current URL:</strong> <span id="currentUrl"></span></p>
+            <p><strong>Admin URL:</strong> <span id="adminUrl"></span></p>
+            <p><strong>Resolved URL:</strong> <span id="resolvedUrl"></span></p>
+        </div>
+        
+        <div class="result">
+            <h3>Test Actions:</h3>
+            <button onclick="testDirectNavigation()">Test Direct Navigation</button>
+            <button onclick="testWithLocalStorage()">Test with localStorage</button>
+            <button onclick="simulateSecretCode()">Simulate Secret Code Flow</button>
+            <button onclick="checkAdminPage()">Check Admin Page</button>
+        </div>
+        
+        <div class="result">
+            <h3>Results:</h3>
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `${new Date().toLocaleTimeString()}: ${message}`;
+            results.appendChild(div);
+        }
+
+        function updateStatus() {
+            const currentUrl = window.location.href;
+            const adminUrl = 'src/pages/admin.html';
+            const resolvedUrl = new URL(adminUrl, currentUrl).href;
+            
+            document.getElementById('currentUrl').textContent = currentUrl;
+            document.getElementById('adminUrl').textContent = adminUrl;
+            document.getElementById('resolvedUrl').textContent = resolvedUrl;
+        }
+
+        function testDirectNavigation() {
+            addResult('Testing direct navigation to admin page...', 'info');
+            const adminUrl = 'src/pages/admin.html';
+            
+            try {
+                addResult('Attempting to navigate to: ' + adminUrl, 'info');
+                window.location.href = adminUrl;
+            } catch (error) {
+                addResult('Error during navigation: ' + error.message, 'error');
+            }
+        }
+
+        function testWithLocalStorage() {
+            addResult('Setting localStorage flags and navigating...', 'info');
+            
+            // Set the same flags as the secret code
+            localStorage.setItem('modernstore_admin_access', 'true');
+            localStorage.setItem('modernstore_admin_timestamp', Date.now().toString());
+            
+            addResult('localStorage flags set:', 'success');
+            addResult('- modernstore_admin_access: ' + localStorage.getItem('modernstore_admin_access'), 'info');
+            addResult('- modernstore_admin_timestamp: ' + localStorage.getItem('modernstore_admin_timestamp'), 'info');
+            
+            setTimeout(() => {
+                addResult('Navigating to admin page...', 'info');
+                window.location.href = 'src/pages/admin.html';
+            }, 1000);
+        }
+
+        function simulateSecretCode() {
+            addResult('Simulating complete secret code flow...', 'info');
+            
+            // Simulate the exact same process
+            addResult('Step 1: Setting localStorage flags', 'info');
+            localStorage.setItem('modernstore_admin_access', 'true');
+            localStorage.setItem('modernstore_admin_timestamp', Date.now().toString());
+            
+            addResult('Step 2: Waiting 300ms (same as popup close delay)', 'info');
+            setTimeout(() => {
+                addResult('Step 3: Navigating to admin page', 'info');
+                const adminUrl = 'src/pages/admin.html';
+                addResult('Admin URL: ' + adminUrl, 'info');
+                addResult('Current location: ' + window.location.href, 'info');
+                addResult('Resolved URL: ' + new URL(adminUrl, window.location.href).href, 'info');
+                
+                window.location.href = adminUrl;
+            }, 300);
+        }
+
+        function checkAdminPage() {
+            addResult('Checking if admin page exists...', 'info');
+            
+            fetch('src/pages/admin.html')
+                .then(response => {
+                    if (response.ok) {
+                        addResult('✅ Admin page exists and is accessible', 'success');
+                        addResult('HTTP Status: ' + response.status, 'info');
+                        
+                        // Try to read the content
+                        return response.text();
+                    } else {
+                        addResult('❌ Admin page returned error: ' + response.status, 'error');
+                        throw new Error('HTTP ' + response.status);
+                    }
+                })
+                .then(content => {
+                    if (content.includes('Access Denied')) {
+                        addResult('⚠️ Admin page contains "Access Denied" - this is expected', 'info');
+                    }
+                    if (content.includes('checkAdminAccess')) {
+                        addResult('✅ Admin page has access control function', 'success');
+                    }
+                    addResult('Admin page content length: ' + content.length + ' characters', 'info');
+                })
+                .catch(error => {
+                    addResult('❌ Error checking admin page: ' + error.message, 'error');
+                });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            addResult('Diagnostic tool loaded', 'success');
+            
+            // Check if we have admin access flags
+            const hasAccess = localStorage.getItem('modernstore_admin_access');
+            const timestamp = localStorage.getItem('modernstore_admin_timestamp');
+            
+            if (hasAccess) {
+                addResult('Found existing admin access flags:', 'info');
+                addResult('- Access: ' + hasAccess, 'info');
+                addResult('- Timestamp: ' + timestamp, 'info');
+                
+                if (timestamp) {
+                    const age = Date.now() - parseInt(timestamp);
+                    addResult('- Age: ' + Math.round(age / 1000 / 60) + ' minutes', 'info');
+                }
+            } else {
+                addResult('No existing admin access flags found', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

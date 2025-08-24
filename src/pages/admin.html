@@ -3,145 +3,1681 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModernStore - Admin Dashboard</title>
-    <meta name="description" content="Admin dashboard for product management">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="multipage-enhancements.css">
+    <title>ModernStore - Complete Admin Dashboard</title>
+    <meta name="description" content="Complete admin dashboard with order management, tracking, and refunds">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.5;
+            color: var(--gray-800);
+            background: #fafbfc;
+            font-weight: 400;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
+        
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            letter-spacing: -0.025em;
+        }
+        
+        .brand-link {
+            text-decoration: none;
+        }
+        
+        .brand-title:hover {
+            transform: scale(1.05);
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .notification-icon {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        
+        .notification-icon:hover {
+            background: var(--gray-100);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--error);
+            color: white;
+            border-radius: 50%;
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 0;
+            background: var(--gray-100);
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+        }
+        
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-card {
+            background: var(--white);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .dashboard-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+        }
+        
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .card-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .card-change.positive { color: var(--success); }
+        .card-change.negative { color: var(--error); }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-shipped { background: #d1fae5; color: #065f46; }
+        .status-delivered { background: #dcfce7; color: #166534; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        
+        /* Tables */
+        .admin-table-container {
+            background: var(--white);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .table-header {
+            padding: 1rem;
+            background: var(--gray-50);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .admin-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        
+        .admin-table tr:hover {
+            background: var(--gray-50);
+        }
+        
+        .admin-table td {
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.875rem;
+        }
+        
+        .admin-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.875rem;
+            margin: 0.125rem;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-primary { 
+            background: var(--primary); 
+            color: white; 
+            border-color: var(--primary);
+        }
+        .btn-primary:hover { 
+            background: var(--primary-dark); 
+            border-color: var(--primary-dark);
+        }
+        
+        .btn-success { 
+            background: var(--success); 
+            color: white; 
+            border-color: var(--success);
+        }
+        .btn-success:hover { 
+            background: #059669; 
+            border-color: #059669;
+        }
+        
+        .btn-warning { 
+            background: var(--warning); 
+            color: white; 
+            border-color: var(--warning);
+        }
+        .btn-warning:hover { 
+            background: #d97706; 
+            border-color: #d97706;
+        }
+        
+        .btn-danger { 
+            background: var(--error); 
+            color: white; 
+            border-color: var(--error);
+        }
+        .btn-danger:hover { 
+            background: #dc2626; 
+            border-color: #dc2626;
+        }
+        
+        .btn-secondary { 
+            background: var(--white); 
+            color: var(--gray-700); 
+            border-color: var(--gray-300);
+        }
+        .btn-secondary:hover { 
+            background: var(--gray-50); 
+            border-color: var(--gray-400);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: var(--gray-600);
+        }
+        
+        /* Filters */
+        .filters-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-label {
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+        
+        .filter-input {
+            padding: 0.5rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <!-- Navigation Header -->
-    <header class="header" role="banner">
-        <nav class="navbar" role="navigation" aria-label="Main navigation">
-            <div class="nav-container">
-                <div class="nav-brand">
-                    <a href="../index.html" class="brand-link" aria-label="Go to homepage">
-                        <h1 class="brand-title">ModernStore</h1>
-                    </a>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <ul id="nav-menu" class="nav-menu">
-                    <li>
-                        <a href="../index.html" class="nav-link" aria-label="Home page">Home</a>
-                    </li>
-                    <li>
-                        <a href="products.html" class="nav-link" aria-label="Products page">Products</a>
-                    </li>
-                    <li>
-                        <a href="cart.html" class="nav-link cart-link" aria-label="Shopping cart">
-                            Cart <span class="cart-count" aria-label="Items in cart" aria-live="polite">0</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin.html" class="nav-link" aria-label="Admin dashboard">Admin</a>
-                    </li>
-                </ul>
-                
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" type="button" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="nav-menu">
-                    <span class="hamburger-line" aria-hidden="true"></span>
-                    <span class="hamburger-line" aria-hidden="true"></span>
-                    <span class="hamburger-line" aria-hidden="true"></span>
-                </button>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="../../index.html" class="brand-link">
+                <h1 class="brand-title">ModernStore Admin</h1>
+            </a>
+            
+            <div class="admin-tabs">
+                <button class="tab-button active" onclick="showTab('dashboard')">Dashboard</button>
+                <button class="tab-button" onclick="showTab('orders')">Orders</button>
+                <button class="tab-button" onclick="showTab('tracking')">Tracking</button>
+                <button class="tab-button" onclick="showTab('refunds')">Refunds</button>
+                <button class="tab-button" onclick="showTab('products')">Products</button>
             </div>
-        </nav>
+            
+            <div class="header-actions">
+                <div style="position: relative;">
+                    <button class="notification-icon" onclick="toggleNotifications()">
+                        Alerts
+                        <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+                    </button>
+                </div>
+                <a href="../../index.html" class="btn btn-secondary">← Back to Store</a>
+            </div>
+        </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main id="main-content" class="main-content" role="main">
-        
-        <!-- Admin Page Section -->
-        <section id="admin-hidden" class="page-section admin-page active" aria-labelledby="admin-title">
-            <div class="container">
-                <header class="page-header">
-                    <h2 id="admin-title">Admin Dashboard</h2>
-                    <p id="admin-subtitle" class="admin-subtitle">Product Management Interface</p>
-                </header>
-                
-                <div class="admin-content">
-                    <div class="admin-controls" role="toolbar" aria-label="Product management actions">
-                        <button class="admin-button" id="add-product-btn" aria-describedby="admin-subtitle">Add New Product</button>
-                        <button class="admin-button secondary" id="refresh-products-btn" aria-describedby="admin-subtitle">Refresh</button>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="page-header">
+                    <h2 class="page-title">Dashboard Overview</h2>
+                    <p class="page-subtitle">Monitor your store performance and key metrics</p>
+                </div>
+
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">Total Orders</div>
+                        </div>
+                        <div class="card-value" id="total-orders">0</div>
+                        <div class="card-change positive" id="orders-change">+0 this week</div>
                     </div>
                     
-                    <div class="admin-table-container" role="region" aria-labelledby="admin-table-caption">
-                        <table class="admin-table" id="admin-products-table" role="table">
-                            <caption id="admin-table-caption" class="sr-only">Product management table with options to edit and delete products</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Category</th>
-                                    <th scope="col">Featured</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-products-tbody" aria-live="polite">
-                                <!-- Admin product rows will be dynamically inserted here -->
-                                <tr>
-                                    <td colspan="6" class="no-data">Loading product data...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">Total Revenue</div>
+                        </div>
+                        <div class="card-value" id="total-revenue">$0</div>
+                        <div class="card-change positive" id="revenue-change">+$0 this week</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">Pending Orders</div>
+                        </div>
+                        <div class="card-value" id="pending-orders">0</div>
+                        <div class="card-change" id="pending-change">Need attention</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">Refund Requests</div>
+                        </div>
+                        <div class="card-value" id="refund-requests">0</div>
+                        <div class="card-change" id="refunds-change">Awaiting review</div>
                     </div>
                 </div>
-            </div>
-        </section>
 
+                <!-- Quick Actions -->
+                <div class="admin-table-container">
+                    <div class="table-header">
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div style="padding: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn btn-primary" onclick="generateSampleData()">Generate Sample Data</button>
+                        <button class="btn btn-success" onclick="exportAllOrders()">Export All Orders</button>
+                        <button class="btn btn-warning" onclick="showTab('refunds')">Review Refunds</button>
+                        <button class="btn btn-secondary" onclick="clearAllData()">Clear Test Data</button>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="admin-table-container">
+                    <div class="table-header">
+                        <h3>Recent Orders</h3>
+                        <span id="recent-orders-count">0 orders</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-orders-table">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--gray-600); padding: 2rem;">
+                                    No orders yet. Generate sample data to get started.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="orders-tab" class="tab-content">
+                <div class="page-header">
+                    <h2 class="page-title">Order Management</h2>
+                    <p class="page-subtitle">View and manage all customer orders</p>
+                </div>
+
+                <!-- Order Filters -->
+                <div class="filters-container">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Status Filter</label>
+                            <select class="filter-input" id="order-status-filter" onchange="filterOrders()">
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Search Orders</label>
+                            <input type="text" class="filter-input" id="order-search" placeholder="Order ID or customer name..." onkeyup="filterOrders()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="admin-table-container">
+                    <div class="table-header">
+                        <h3>All Orders</h3>
+                        <span id="orders-count">0 orders</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">
+                                    No orders found. Generate sample data to get started.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tracking Tab -->
+            <div id="tracking-tab" class="tab-content">
+                <div class="page-header">
+                    <h2 class="page-title">Order Tracking</h2>
+                    <p class="page-subtitle">Manage shipping and delivery tracking</p>
+                </div>
+
+                <!-- Tracking Table -->
+                <div class="admin-table-container">
+                    <div class="table-header">
+                        <h3>Tracking Information</h3>
+                        <span id="tracking-count">0 shipments</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Tracking Number</th>
+                                <th>Carrier</th>
+                                <th>Status</th>
+                                <th>Est. Delivery</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tracking-table">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">
+                                    No shipments to track yet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Refunds Tab -->
+            <div id="refunds-tab" class="tab-content">
+                <div class="page-header">
+                    <h2 class="page-title">Refund Management</h2>
+                    <p class="page-subtitle">Process refunds and handle customer returns</p>
+                </div>
+
+                <!-- Refunds Table -->
+                <div class="admin-table-container">
+                    <div class="table-header">
+                        <h3>Refund Requests</h3>
+                        <span id="refunds-count">0 requests</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Refund Amount</th>
+                                <th>Reason</th>
+                                <th>Requested Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="refunds-table">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">
+                                    No refund requests yet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div id="products-tab" class="tab-content">
+                <div class="page-header">
+                    <h2 class="page-title">Product Management</h2>
+                    <p class="page-subtitle">Manage your store inventory and product catalog</p>
+                </div>
+
+                <!-- Product Stats Cards -->
+                <div class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">Total Products</div>
+                        </div>
+                        <div class="card-value" id="total-products-count">0</div>
+                        <div class="card-change" id="products-change">Active products</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">In Stock</div>
+                        </div>
+                        <div class="card-value" id="products-in-stock">0</div>
+                        <div class="card-change positive" id="stock-change">Available</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">Low Stock</div>
+                        </div>
+                        <div class="card-value" id="products-low-stock">0</div>
+                        <div class="card-change" id="low-stock-change">Need attention</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">Total Value</div>
+                        </div>
+                        <div class="card-value" id="products-total-value">$0</div>
+                        <div class="card-change" id="value-change">Inventory value</div>
+                    </div>
+                </div>
+
+                <!-- Product Actions -->
+                <div class="admin-table-container">
+                    <div class="table-header">
+                        <h3>Product Actions</h3>
+                    </div>
+                    <div style="padding: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn btn-primary" onclick="openProductModal()">Add New Product</button>
+                        <button class="btn btn-success" onclick="exportProducts()">Export Products</button>
+                        <button class="btn btn-warning" onclick="checkLowStock()">Check Low Stock</button>
+                        <button class="btn btn-secondary" onclick="syncWithStore()">Sync with Store</button>
+                    </div>
+                </div>
+
+                <!-- Product Filters -->
+                <div class="filters-container">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Category Filter</label>
+                            <select class="filter-input" id="product-category-filter" onchange="filterProducts()">
+                                <option value="">All Categories</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="accessories">Accessories</option>
+                                <option value="clothing">Clothing</option>
+                                <option value="home">Home & Garden</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Stock Status</label>
+                            <select class="filter-input" id="product-stock-filter" onchange="filterProducts()">
+                                <option value="">All Products</option>
+                                <option value="in-stock">In Stock</option>
+                                <option value="low-stock">Low Stock</option>
+                                <option value="out-of-stock">Out of Stock</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Search Products</label>
+                            <input type="text" class="filter-input" id="product-search" placeholder="Name, SKU, or description..." onkeyup="filterProducts()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Table -->
+                <div class="admin-table-container">
+                    <div class="table-header">
+                        <h3>All Products</h3>
+                        <span id="products-count">0 products</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">
+                                    Loading products...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer" role="contentinfo">
-        <div class="container">
-            <p>&copy; 2024 ModernStore. All rights reserved.</p>
-        </div>
-    </footer>
+    <!-- Enhanced Product Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary) 0%, #667eea 100%); color: white; margin: -2rem -2rem 2rem -2rem; padding: 1.5rem 2rem; border-radius: 1rem 1rem 0 0;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 0.5rem; font-size: 1.5rem;">
+                        📦
+                    </div>
+                    <div>
+                        <h3 id="product-modal-title" style="margin: 0; font-size: 1.5rem; font-weight: 600;">Add New Product</h3>
+                        <p style="margin: 0; opacity: 0.9; font-size: 0.875rem;">Create a new product for your store</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeModal('product-modal')" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.5rem; padding: 0.5rem; border-radius: 0.375rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <!-- Basic Information Section -->
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin: 0 0 1rem 0; color: var(--gray-800); font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="background: var(--primary); color: white; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">1</span>
+                        Basic Information
+                    </h4>
+                    <div class="form-grid" style="grid-template-columns: 2fr 1fr;">
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight: 500; color: var(--gray-700);">Product Name *</label>
+                            <input type="text" class="form-input" id="product-name" name="name" required 
+                                   style="padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: 0.5rem; font-size: 1rem; transition: border-color 0.2s;"
+                                   placeholder="Enter product name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight: 500; color: var(--gray-700);">SKU *</label>
+                            <input type="text" class="form-input" id="product-sku" name="sku" required 
+                                   style="padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: 0.5rem; font-size: 1rem; background: var(--gray-50);"
+                                   readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" style="font-weight: 500; color: var(--gray-700);">Description *</label>
+                        <textarea class="form-input" id="product-description" name="description" rows="3" required 
+                                  style="padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: 0.5rem; font-size: 1rem; resize: vertical;"
+                                  placeholder="Describe your product features and benefits"></textarea>
+                    </div>
+                </div>
 
-    <!-- Add Product Modal -->
-    <div id="add-product-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="add-product-title">
-            <button class="modal-close" id="close-add-product-modal" aria-label="Close">&times;</button>
-            <h2 id="add-product-title">Add New Product</h2>
-            <form id="add-product-form" autocomplete="off">
-                <div class="form-group">
-                    <label for="product-name">Product Name</label>
-                    <input type="text" id="product-name" name="name" required>
+                <!-- Category & Pricing Section -->
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin: 0 0 1rem 0; color: var(--gray-800); font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="background: var(--primary); color: white; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">2</span>
+                        Category & Pricing
+                    </h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight: 500; color: var(--gray-700);">Category *</label>
+                            <select class="form-input" id="product-category" name="category" required 
+                                    style="padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: 0.5rem; font-size: 1rem;">
+                                <option value="">Select Category</option>
+                                <option value="electronics">📱 Electronics</option>
+                                <option value="accessories">🎧 Accessories</option>
+                                <option value="clothing">👕 Clothing</option>
+                                <option value="home">🏠 Home & Garden</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight: 500; color: var(--gray-700);">Price ($) *</label>
+                            <div style="position: relative;">
+                                <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--gray-500); font-weight: 600;">$</span>
+                                <input type="number" class="form-input" id="product-price" name="price" step="0.01" min="0" required 
+                                       style="padding: 0.75rem 0.75rem 0.75rem 2rem; border: 2px solid var(--gray-200); border-radius: 0.5rem; font-size: 1rem;"
+                                       placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="product-price">Price ($)</label>
-                    <input type="number" id="product-price" name="price" min="0" step="0.01" required>
+
+                <!-- Inventory & Media Section -->
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin: 0 0 1rem 0; color: var(--gray-800); font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="background: var(--primary); color: white; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">3</span>
+                        Inventory & Media
+                    </h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight: 500; color: var(--gray-700);">Stock Quantity *</label>
+                            <input type="number" class="form-input" id="product-stock" name="stockQuantity" min="0" required 
+                                   style="padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: 0.5rem; font-size: 1rem;"
+                                   placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="font-weight: 500; color: var(--gray-700);">Product Image URL</label>
+                            <input type="url" class="form-input" id="product-image" name="image" 
+                                   style="padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: 0.5rem; font-size: 1rem;"
+                                   placeholder="https://example.com/product-image.jpg">
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="product-category">Category</label>
-                    <select id="product-category" name="category" required>
-                        <option value="">Select category</option>
-                        <option value="electronics">Electronics</option>
-                        <option value="clothing">Clothing</option>
-                        <option value="home">Home & Garden</option>
-                    </select>
+
+                <!-- Product Settings Section -->
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin: 0 0 1rem 0; color: var(--gray-800); font-size: 1.125rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="background: var(--primary); color: white; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">4</span>
+                        Product Settings
+                    </h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div style="background: var(--gray-50); padding: 1rem; border-radius: 0.5rem; border: 2px solid var(--gray-200);">
+                            <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                <input type="checkbox" id="product-featured" name="featured" 
+                                       style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary);">
+                                <div>
+                                    <div style="font-weight: 500; color: var(--gray-800);">Featured Product</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray-600);">Show on homepage</div>
+                                </div>
+                            </label>
+                        </div>
+                        <div style="background: var(--gray-50); padding: 1rem; border-radius: 0.5rem; border: 2px solid var(--gray-200);">
+                            <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+                                <input type="checkbox" id="product-in-stock" name="inStock" checked 
+                                       style="width: 1.25rem; height: 1.25rem; accent-color: var(--success);">
+                                <div>
+                                    <div style="font-weight: 500; color: var(--gray-800);">In Stock</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray-600);">Available for purchase</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="product-image">Image URL</label>
-                    <input type="url" id="product-image" name="image" required>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('product-modal')" 
+                            style="padding: 0.75rem 1.5rem; font-weight: 500;">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" 
+                            style="padding: 0.75rem 2rem; font-weight: 500; background: linear-gradient(135deg, var(--primary) 0%, #667eea 100%); border: none;">
+                        💾 Save Product
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label for="product-description">Description</label>
-                    <textarea id="product-description" name="description" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label><input type="checkbox" id="product-featured" name="featured"> Featured</label>
-                </div>
-                <div class="form-group">
-                    <label><input type="checkbox" id="product-instock" name="inStock" checked> In Stock</label>
-                </div>
-                <button type="submit" class="admin-button primary">Add Product</button>
             </form>
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script defer src="script-multipage.js"></script>
+    <!-- Scripts -->
+    <script src="../scripts/utils/products-utils.js"></script>
+    <script src="../scripts/utils/orders-utils.js"></script>
+    <script>
+        // Global variables
+        let currentOrders = [];
+        let filteredOrders = [];
+        let currentProducts = [];
+        let filteredProducts = [];
+        let editingProductId = null;
+
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminData();
+            updateAllDisplays();
+            updateNotificationsBadge();
+            
+            // Set up product display update callback
+            window.updateProductsDisplay = updateProductsTable;
+        });
+
+        // Tab Management
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'dashboard') updateDashboard();
+            if (tabName === 'orders') updateOrdersTable();
+            if (tabName === 'tracking') updateTrackingTable();
+            if (tabName === 'refunds') updateRefundsTable();
+            if (tabName === 'products') updateProductsDisplay();
+        }
+
+        // Load admin data
+        function loadAdminData() {
+            currentOrders = Orders.getOrders();
+            filteredOrders = [...currentOrders];
+            currentProducts = Products.getProducts();
+            filteredProducts = [...currentProducts];
+        }
+
+        // Generate sample data
+        function generateSampleData() {
+            const sampleOrders = [
+                {
+                    userId: null,
+                    items: [
+                        { name: 'Wireless Bluetooth Headphones', price: 89.99, quantity: 1 },
+                        { name: 'Phone Case', price: 19.99, quantity: 2 }
+                    ],
+                    subtotal: 129.97,
+                    shipping: 9.99,
+                    tax: 10.40,
+                    total: 150.36,
+                    customerInfo: {
+                        name: 'John Smith',
+                        email: 'john.smith@email.com',
+                        phone: '+1-555-0123',
+                        address: { street: '123 Main St', city: 'New York', state: 'NY', zip: '10001' }
+                    }
+                },
+                {
+                    userId: null,
+                    items: [{ name: 'Smart Watch Pro', price: 299.99, quantity: 1 }],
+                    subtotal: 299.99,
+                    shipping: 0,
+                    tax: 24.00,
+                    total: 323.99,
+                    customerInfo: {
+                        name: 'Jane Doe',
+                        email: 'jane.doe@email.com',
+                        phone: '+1-555-0456',
+                        address: { street: '456 Oak Ave', city: 'Los Angeles', state: 'CA', zip: '90210' }
+                    }
+                }
+            ];
+
+            sampleOrders.forEach((orderData, index) => {
+                const order = Orders.createOrder(orderData);
+                if (index === 0) {
+                    setTimeout(() => Orders.updateOrderStatus(order.id, 'processing', 'Payment confirmed'), 100);
+                }
+                if (index === 1) {
+                    setTimeout(() => {
+                        Orders.updateOrderStatus(order.id, 'shipped', 'Package shipped');
+                        Orders.processRefund(order.id, {
+                            status: 'requested',
+                            amount: 50.00,
+                            reason: 'Customer requested partial refund - damaged packaging'
+                        });
+                    }, 200);
+                }
+            });
+
+            setTimeout(() => {
+                loadAdminData();
+                updateAllDisplays();
+                showNotification('Sample data generated successfully!', 'success');
+            }, 500);
+        }
+
+        // Update all displays
+        function updateAllDisplays() {
+            updateDashboard();
+            updateOrdersTable();
+            updateTrackingTable();
+            updateRefundsTable();
+            updateProductsDisplay();
+            updateNotificationsBadge();
+        }
+
+        // Dashboard updates
+        function updateDashboard() {
+            const stats = Orders.getOrderStats();
+            
+            document.getElementById('total-orders').textContent = stats.total;
+            document.getElementById('total-revenue').textContent = '$' + stats.totalRevenue.toFixed(2);
+            document.getElementById('pending-orders').textContent = stats.pending;
+            document.getElementById('refund-requests').textContent = stats.refundRequested;
+            
+            updateRecentOrdersTable();
+        }
+
+        function updateRecentOrdersTable() {
+            const recentOrders = currentOrders.slice(-5).reverse();
+            const html = recentOrders.length > 0 ? 
+                recentOrders.map(order => `
+                    <tr>
+                        <td><strong>${order.id}</strong></td>
+                        <td>${order.customerInfo.name}</td>
+                        <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                        <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                        <td>$${order.pricing.total.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}', 'processing')">Process</button>
+                            <button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'shipped')">Ship</button>
+                        </td>
+                    </tr>
+                `).join('') :
+                '<tr><td colspan="6" style="text-align: center; color: var(--gray-600); padding: 2rem;">No orders yet</td></tr>';
+            
+            document.getElementById('recent-orders-table').innerHTML = html;
+            document.getElementById('recent-orders-count').textContent = `${recentOrders.length} recent orders`;
+        }
+
+        // Update order status
+        function updateOrderStatus(orderId, newStatus) {
+            Orders.updateOrderStatus(orderId, newStatus, `Status updated to ${newStatus}`);
+            loadAdminData();
+            updateAllDisplays();
+            showNotification(`Order ${orderId} updated to ${newStatus}`, 'success');
+        }
+
+        // Update orders table
+        function updateOrdersTable() {
+            const html = filteredOrders.length > 0 ? 
+                filteredOrders.map(order => `
+                    <tr>
+                        <td><strong>${order.id}</strong></td>
+                        <td>${order.customerInfo.name}</td>
+                        <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                        <td>${order.items.length} item(s)</td>
+                        <td>$${order.pricing.total.toFixed(2)}</td>
+                        <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}', 'processing')">Process</button>
+                            <button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.id}', 'shipped')">Ship</button>
+                        </td>
+                    </tr>
+                `).join('') :
+                '<tr><td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">No orders found</td></tr>';
+            
+            document.getElementById('orders-table').innerHTML = html;
+            document.getElementById('orders-count').textContent = `${filteredOrders.length} orders`;
+        }
+
+        // Update tracking table
+        function updateTrackingTable() {
+            const shippedOrders = currentOrders.filter(order => order.tracking && order.tracking.number);
+            const html = shippedOrders.length > 0 ? 
+                shippedOrders.map(order => `
+                    <tr>
+                        <td><strong>${order.id}</strong></td>
+                        <td>${order.customerInfo.name}</td>
+                        <td>${order.tracking.number}</td>
+                        <td>${order.tracking.carrier}</td>
+                        <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                        <td>${order.tracking.estimatedDelivery ? new Date(order.tracking.estimatedDelivery).toLocaleDateString() : 'TBD'}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.id}', 'delivered')">Mark Delivered</button>
+                        </td>
+                    </tr>
+                `).join('') :
+                '<tr><td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">No shipments to track</td></tr>';
+            
+            document.getElementById('tracking-table').innerHTML = html;
+            document.getElementById('tracking-count').textContent = `${shippedOrders.length} shipments`;
+        }
+
+        // Update refunds table
+        function updateRefundsTable() {
+            const refundOrders = currentOrders.filter(order => order.refund && order.refund.status !== 'none');
+            const html = refundOrders.length > 0 ? 
+                refundOrders.map(order => `
+                    <tr>
+                        <td><strong>${order.id}</strong></td>
+                        <td>${order.customerInfo.name}</td>
+                        <td>$${order.refund.amount.toFixed(2)}</td>
+                        <td>${order.refund.reason}</td>
+                        <td>${order.refund.requestedAt ? new Date(order.refund.requestedAt).toLocaleDateString() : 'N/A'}</td>
+                        <td><span class="status-badge status-${order.refund.status}">${order.refund.status}</span></td>
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="processRefund('${order.id}', 'approved')">Approve</button>
+                            <button class="btn btn-warning btn-sm" onclick="processRefund('${order.id}', 'processed')">Process</button>
+                        </td>
+                    </tr>
+                `).join('') :
+                '<tr><td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">No refund requests</td></tr>';
+            
+            document.getElementById('refunds-table').innerHTML = html;
+            document.getElementById('refunds-count').textContent = `${refundOrders.length} requests`;
+        }
+
+        // Process refund
+        function processRefund(orderId, status) {
+            const order = Orders.getOrderById(orderId);
+            if (order) {
+                Orders.processRefund(orderId, {
+                    status: status,
+                    amount: order.refund.amount,
+                    reason: order.refund.reason
+                });
+                loadAdminData();
+                updateAllDisplays();
+                showNotification(`Refund ${status} for order ${orderId}`, 'success');
+            }
+        }
+
+        // Filter orders
+        function filterOrders() {
+            const statusFilter = document.getElementById('order-status-filter').value;
+            const searchFilter = document.getElementById('order-search').value.toLowerCase();
+            
+            filteredOrders = currentOrders.filter(order => {
+                const matchesStatus = !statusFilter || order.status === statusFilter;
+                const matchesSearch = !searchFilter || 
+                    order.id.toLowerCase().includes(searchFilter) ||
+                    order.customerInfo.name.toLowerCase().includes(searchFilter);
+                return matchesStatus && matchesSearch;
+            });
+            
+            updateOrdersTable();
+        }
+
+        // Notifications
+        function toggleNotifications() {
+            // Placeholder for notifications dropdown
+            showNotification('Notifications feature active', 'info');
+        }
+
+        function updateNotificationsBadge() {
+            const unreadNotifications = Orders.getNotifications ? Orders.getNotifications(true) : [];
+            const badge = document.getElementById('notification-badge');
+            
+            if (unreadNotifications.length > 0) {
+                badge.style.display = 'flex';
+                badge.textContent = unreadNotifications.length;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Export functionality
+        function exportAllOrders() {
+            const orders = Orders.getOrders();
+            if (orders.length === 0) {
+                showNotification('No orders to export', 'warning');
+                return;
+            }
+
+            const csvContent = [
+                ['Order ID', 'Customer', 'Email', 'Date', 'Items', 'Total', 'Status'],
+                ...orders.map(order => [
+                    order.id,
+                    order.customerInfo.name,
+                    order.customerInfo.email,
+                    new Date(order.createdAt).toLocaleDateString(),
+                    order.items.length,
+                    order.pricing.total.toFixed(2),
+                    order.status
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `modernstore_orders_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Orders exported successfully!', 'success');
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all test data? This cannot be undone.')) {
+                localStorage.removeItem('modernstore_orders');
+                localStorage.removeItem('modernstore_notifications');
+                currentOrders = [];
+                filteredOrders = [];
+                updateAllDisplays();
+                showNotification('All test data cleared', 'info');
+            }
+        }
+
+        // Modal management
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+                console.log('Modal opened:', modalId);
+            } else {
+                console.error('Modal not found:', modalId);
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+                console.log('Modal closed:', modalId);
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const colors = {
+                success: 'var(--success)',
+                error: 'var(--error)',
+                info: 'var(--primary)',
+                warning: 'var(--warning)'
+            };
+
+            const div = document.createElement('div');
+            div.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.75rem;
+                z-index: 2000;
+                font-weight: 500;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                animation: slideIn 0.3s ease-out;
+            `;
+            div.textContent = message;
+            
+            // Add animation keyframes if not exists
+            if (!document.querySelector('#notification-animations')) {
+                const style = document.createElement('style');
+                style.id = 'notification-animations';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        // ========================
+        // PRODUCT MANAGEMENT FUNCTIONS
+        // ========================
+
+        function updateProductsDisplay() {
+            updateProductStats();
+            updateProductsTable();
+        }
+
+        function updateProductStats() {
+            const stats = Products.getProductStats();
+            
+            document.getElementById('total-products-count').textContent = stats.total;
+            document.getElementById('products-in-stock').textContent = stats.inStock;
+            document.getElementById('products-low-stock').textContent = stats.lowStock;
+            document.getElementById('products-total-value').textContent = '$' + stats.totalValue.toFixed(2);
+            
+            // Update the main dashboard product count too
+            document.getElementById('total-products').textContent = stats.total;
+        }
+
+        function updateProductsTable() {
+            const html = filteredProducts.length > 0 ? 
+                filteredProducts.map(product => `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <img src="${product.image}" alt="${product.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 0.25rem;">
+                                <div>
+                                    <div style="font-weight: 500;">${product.name}</div>
+                                    <div style="font-size: 0.75rem; color: var(--gray-500);">${product.description.substring(0, 50)}...</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><strong>${product.sku}</strong></td>
+                        <td><span style="text-transform: capitalize;">${product.category}</span></td>
+                        <td>$${product.price.toFixed(2)}</td>
+                        <td>
+                            <span style="color: ${product.stockQuantity < 10 ? 'var(--error)' : 'var(--success)'};">
+                                ${product.stockQuantity}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge ${product.inStock ? 'status-delivered' : 'status-cancelled'}">
+                                ${product.inStock ? 'In Stock' : 'Out of Stock'}
+                            </span>
+                            ${product.featured ? '<span class="status-badge status-processing" style="margin-left: 0.25rem;">Featured</span>' : ''}
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editProduct('${product.id}')">Edit</button>
+                            <button class="btn btn-warning btn-sm" onclick="updateProductStock('${product.id}')">Stock</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProductConfirm('${product.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('') :
+                '<tr><td colspan="7" style="text-align: center; color: var(--gray-600); padding: 3rem;">No products found</td></tr>';
+            
+            document.getElementById('products-table').innerHTML = html;
+            document.getElementById('products-count').textContent = `${filteredProducts.length} products`;
+        }
+
+        function openProductModal(productId = null) {
+            console.log('Opening product modal, productId:', productId);
+            
+            editingProductId = productId;
+            const title = document.getElementById('product-modal-title');
+            const form = document.getElementById('product-form');
+            
+            if (!title || !form) {
+                console.error('Product modal elements not found');
+                showNotification('❌ Error opening product form', 'error');
+                return;
+            }
+            
+            if (productId) {
+                // Edit mode
+                title.textContent = 'Edit Product';
+                const product = Products.getProductById(productId);
+                if (product) {
+                    document.getElementById('product-name').value = product.name || '';
+                    document.getElementById('product-sku').value = product.sku || '';
+                    document.getElementById('product-category').value = product.category || '';
+                    document.getElementById('product-price').value = product.price || '';
+                    document.getElementById('product-stock').value = product.stockQuantity || '';
+                    document.getElementById('product-image').value = product.image || '';
+                    document.getElementById('product-description').value = product.description || '';
+                    document.getElementById('product-featured').checked = product.featured || false;
+                    document.getElementById('product-in-stock').checked = product.inStock !== false;
+                }
+            } else {
+                // Add mode
+                title.textContent = 'Add New Product';
+                form.reset();
+                
+                // Generate a more professional SKU
+                const timestamp = Date.now().toString().slice(-6);
+                const skuField = document.getElementById('product-sku');
+                const inStockField = document.getElementById('product-in-stock');
+                const imageField = document.getElementById('product-image');
+                
+                if (skuField) skuField.value = `MS-${timestamp}`;
+                if (inStockField) inStockField.checked = true;
+                if (imageField) imageField.placeholder = 'https://example.com/product-image.jpg';
+            }
+            
+            openModal('product-modal');
+            console.log('Product modal opened successfully');
+        }
+
+        function saveProduct(event) {
+            event.preventDefault();
+            
+            try {
+                const formData = new FormData(event.target);
+                
+                // Validate required fields
+                const name = formData.get('name');
+                const sku = formData.get('sku');
+                const category = formData.get('category');
+                const price = formData.get('price');
+                const stockQuantity = formData.get('stockQuantity');
+                const description = formData.get('description');
+                
+                if (!name || !sku || !category || !price || !stockQuantity || !description) {
+                    showNotification('❌ Please fill in all required fields', 'error');
+                    return;
+                }
+                
+                const productData = {
+                    name: name.trim(),
+                    sku: sku.trim(),
+                    category: category,
+                    price: parseFloat(price),
+                    stockQuantity: parseInt(stockQuantity),
+                    image: formData.get('image') || `/placeholder.svg?height=300&width=300&text=${encodeURIComponent(name)}`,
+                    description: description.trim(),
+                    featured: document.getElementById('product-featured').checked,
+                    inStock: document.getElementById('product-in-stock').checked
+                };
+
+                // Validate data types
+                if (isNaN(productData.price) || productData.price < 0) {
+                    showNotification('❌ Please enter a valid price', 'error');
+                    return;
+                }
+                
+                if (isNaN(productData.stockQuantity) || productData.stockQuantity < 0) {
+                    showNotification('❌ Please enter a valid stock quantity', 'error');
+                    return;
+                }
+
+                let result;
+                if (editingProductId) {
+                    // Update existing product
+                    result = Products.updateProduct(editingProductId, productData);
+                    showNotification(`✅ Product "${productData.name}" updated successfully!`, 'success');
+                } else {
+                    // Create new product
+                    result = Products.createProduct(productData);
+                    showNotification(`✅ Product "${productData.name}" created successfully!`, 'success');
+                }
+
+                if (result) {
+                    closeModal('product-modal');
+                    loadAdminData();
+                    updateAllDisplays();
+                    editingProductId = null;
+                } else {
+                    showNotification('❌ Failed to save product. Please try again.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error saving product:', error);
+                showNotification('❌ Error saving product: ' + error.message, 'error');
+            }
+        }
+
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        function updateProductStock(productId) {
+            const product = Products.getProductById(productId);
+            if (!product) return;
+            
+            const newStock = prompt(`Update stock for ${product.name}:\nCurrent stock: ${product.stockQuantity}`, product.stockQuantity);
+            if (newStock !== null && !isNaN(newStock)) {
+                Products.updateStock(productId, parseInt(newStock));
+                loadAdminData();
+                updateProductsDisplay();
+                showNotification(`Stock updated for ${product.name}`, 'success');
+            }
+        }
+
+        function deleteProductConfirm(productId) {
+            const product = Products.getProductById(productId);
+            if (!product) return;
+            
+            if (confirm(`Are you sure you want to delete "${product.name}"?\nThis action cannot be undone.`)) {
+                Products.deleteProduct(productId);
+                loadAdminData();
+                updateProductsDisplay();
+                showNotification('Product deleted successfully', 'info');
+            }
+        }
+
+        function filterProducts() {
+            const categoryFilter = document.getElementById('product-category-filter').value;
+            const stockFilter = document.getElementById('product-stock-filter').value;
+            const searchFilter = document.getElementById('product-search').value.toLowerCase();
+            
+            filteredProducts = currentProducts.filter(product => {
+                const matchesCategory = !categoryFilter || product.category === categoryFilter;
+                
+                const matchesStock = !stockFilter || 
+                    (stockFilter === 'in-stock' && product.inStock && product.stockQuantity > 10) ||
+                    (stockFilter === 'low-stock' && product.inStock && product.stockQuantity <= 10) ||
+                    (stockFilter === 'out-of-stock' && !product.inStock);
+                
+                const matchesSearch = !searchFilter || 
+                    product.name.toLowerCase().includes(searchFilter) ||
+                    product.description.toLowerCase().includes(searchFilter) ||
+                    product.sku.toLowerCase().includes(searchFilter) ||
+                    product.category.toLowerCase().includes(searchFilter);
+                
+                return matchesCategory && matchesStock && matchesSearch;
+            });
+            
+            updateProductsTable();
+        }
+
+        function exportProducts() {
+            const products = Products.getProducts();
+            if (products.length === 0) {
+                showNotification('❌ No products to export', 'warning');
+                return;
+            }
+
+            // Enhanced CSV with more details
+            const csvContent = [
+                ['Product ID', 'Product Name', 'SKU', 'Category', 'Price', 'Stock Quantity', 'Status', 'Featured', 'Created Date', 'Last Updated', 'Total Value', 'Description'],
+                ...products.map(product => [
+                    product.id,
+                    `"${product.name}"`, // Wrap in quotes for names with commas
+                    product.sku,
+                    product.category,
+                    product.price.toFixed(2),
+                    product.stockQuantity,
+                    product.inStock ? 'In Stock' : 'Out of Stock',
+                    product.featured ? 'Yes' : 'No',
+                    new Date(product.createdAt).toLocaleDateString(),
+                    new Date(product.updatedAt).toLocaleDateString(),
+                    (product.price * product.stockQuantity).toFixed(2),
+                    `"${product.description.replace(/"/g, '""')}"` // Escape quotes in description
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ModernStore_Products_Export_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            // Calculate export stats
+            const totalValue = products.reduce((sum, p) => sum + (p.price * p.stockQuantity), 0);
+            const inStockCount = products.filter(p => p.inStock).length;
+            
+            showNotification(`📁 Exported ${products.length} products (${inStockCount} in stock, $${totalValue.toFixed(2)} total value)`, 'success');
+        }
+
+        function checkLowStock() {
+            const products = Products.getProducts();
+            const lowStockProducts = products.filter(p => p.inStock && p.stockQuantity < 10);
+            const outOfStockProducts = products.filter(p => !p.inStock || p.stockQuantity === 0);
+            
+            if (lowStockProducts.length === 0 && outOfStockProducts.length === 0) {
+                showNotification('✅ All products have adequate stock levels', 'success');
+                return;
+            }
+            
+            let alertMessage = '📦 STOCK ALERT REPORT\n\n';
+            
+            if (outOfStockProducts.length > 0) {
+                alertMessage += `🔴 OUT OF STOCK (${outOfStockProducts.length} products):\n`;
+                outOfStockProducts.forEach(p => {
+                    alertMessage += `• ${p.name} (${p.sku}) - 0 remaining\n`;
+                });
+                alertMessage += '\n';
+            }
+            
+            if (lowStockProducts.length > 0) {
+                alertMessage += `🟡 LOW STOCK (${lowStockProducts.length} products):\n`;
+                lowStockProducts.forEach(p => {
+                    alertMessage += `• ${p.name} (${p.sku}) - ${p.stockQuantity} remaining\n`;
+                });
+            }
+            
+            alertMessage += '\n💡 Recommendation: Reorder these products soon to avoid stockouts.';
+            
+            alert(alertMessage);
+            
+            // Also show a notification
+            showNotification(`${lowStockProducts.length + outOfStockProducts.length} products need attention`, 'warning');
+        }
+
+        function syncWithStore() {
+            // Update the main store pages with current product data
+            const products = Products.getProducts();
+            
+            // Store products in a format that the main store can use
+            localStorage.setItem('store_products_display', JSON.stringify(products));
+            
+            // Trigger update events for any open store pages
+            window.dispatchEvent(new CustomEvent('productsUpdated', { detail: products }));
+            
+            showNotification(`Synced ${products.length} products with store successfully!`, 'success');
+            
+            // Update the dashboard to reflect sync
+            updateProductStats();
+        }
+    </script>
 </body>
 </html>
